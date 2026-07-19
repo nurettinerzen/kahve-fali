@@ -1,0 +1,159 @@
+<style>
+  :root{
+    --studio:#e8e4dc; --studio-ink:#2b2621; --studio-soft:#6b6459; --studio-line:#d3ccc0;
+    --card:#f4f1ea;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --studio:#1a1815; --studio-ink:#ece7dd; --studio-soft:#9a9184; --studio-line:#332f29; --card:#211e1a; }
+  }
+  :root[data-theme="dark"]{ --studio:#1a1815; --studio-ink:#ece7dd; --studio-soft:#9a9184; --studio-line:#332f29; --card:#211e1a; }
+  :root[data-theme="light"]{ --studio:#e8e4dc; --studio-ink:#2b2621; --studio-soft:#6b6459; --studio-line:#d3ccc0; --card:#f4f1ea; }
+
+  *{ box-sizing:border-box; }
+  .wrap{ background:var(--studio); color:var(--studio-ink); padding:32px 20px 48px; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  .wrap h1{ font-family:Georgia,"Times New Roman",serif; font-size:26px; font-weight:500; margin:0 0 4px; letter-spacing:.2px; }
+  .wrap .lead{ color:var(--studio-soft); font-size:14.5px; margin:0 0 30px; max-width:60ch; line-height:1.6; }
+  .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:28px; max-width:1000px; }
+
+  .col{ display:flex; flex-direction:column; gap:12px; }
+  .meta{ display:flex; flex-direction:column; gap:8px; }
+  .meta .nm{ font-size:15px; font-weight:600; }
+  .meta .nm span{ color:var(--studio-soft); font-weight:400; }
+  .meta .ds{ font-size:13px; color:var(--studio-soft); line-height:1.55; }
+  .sw{ display:flex; gap:6px; margin-top:2px; }
+  .sw i{ width:22px; height:22px; border-radius:5px; border:1px solid rgba(0,0,0,.12); display:block; }
+
+  /* telefon çerçevesi */
+  .phone{ border-radius:30px; padding:14px 14px 20px; box-shadow:0 10px 30px rgba(0,0,0,.22); overflow:hidden; }
+  .notch{ width:60px; height:5px; border-radius:3px; margin:2px auto 16px; opacity:.5; }
+  .brand{ text-align:center; margin-bottom:14px; }
+  .brand .moon{ font-size:20px; letter-spacing:3px; }
+  .brand h2{ margin:5px 0 1px; font-size:22px; font-weight:500; }
+  .brand .sub{ font-size:11.5px; letter-spacing:.5px; }
+  .cup{ width:74px; height:74px; border-radius:50%; margin:0 auto 16px; background:radial-gradient(circle at 50% 42%, #3a2416 0 34%, #6b4a2f 34% 52%, transparent 60%); }
+  .seen{ font-size:13px; line-height:1.6; padding:11px 13px; border-radius:11px; margin-bottom:14px; font-style:italic; }
+  .sec h3{ margin:0 0 5px; font-size:14px; font-weight:600; letter-spacing:.3px; }
+  .sec p{ margin:0; font-size:13.5px; line-height:1.7; }
+  .cta{ margin-top:18px; padding:13px; border-radius:12px; text-align:center; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .cta small{ font-weight:400; opacity:.8; font-size:11.5px; }
+
+  /* ---- 1: Gece Kahvesi ---- */
+  .d1{ background:#17100a; color:#efe2d0; }
+  .d1 .notch{ background:#c9a86a; }
+  .d1 .brand .moon,.d1 .brand h2{ color:#d9b877; }
+  .d1 .brand h2{ font-family:"Playfair Display",Georgia,serif; }
+  .d1 .brand .sub{ color:#8c7a5f; }
+  .d1 .seen{ background:rgba(201,168,106,.09); border:1px solid rgba(201,168,106,.22); color:#c9b48f; font-family:Georgia,serif; }
+  .d1 .sec h3{ color:#d9b877; }
+  .d1 .sec p{ color:#e4d7c4; font-family:Georgia,serif; }
+  .d1 .cta{ background:linear-gradient(135deg,#d9b877,#a9823f); color:#1c1206; }
+
+  /* ---- 2: Fincan (porselen) ---- */
+  .d2{ background:#f3ede2; color:#4a3626; }
+  .d2 .notch{ background:#c8b8a3; }
+  .d2 .brand .moon{ color:#b06a4e; }
+  .d2 .brand h2{ font-family:"Fraunces",Georgia,serif; color:#3a2a1c; }
+  .d2 .brand .sub{ color:#a08b73; }
+  .d2 .cup{ box-shadow:0 0 0 3px #fff,0 0 0 4px #d8c9b4; }
+  .d2 .seen{ background:#fbf7f0; border:1px solid #e5d9c7; color:#7a6550; }
+  .d2 .sec h3{ color:#b06a4e; }
+  .d2 .sec p{ color:#5a4433; }
+  .d2 .cta{ background:#b06a4e; color:#fff; }
+
+  /* ---- 3: Çini (Anadolu) ---- */
+  .d3{ background:#0e4a4e; color:#eae3cf; }
+  .d3 .notch{ background:#e0b24a; }
+  .d3 .brand .moon,.d3 .brand h2{ color:#e8c766; }
+  .d3 .brand h2{ font-family:"Amiri",Georgia,serif; }
+  .d3 .brand .sub{ color:#7fb0ac; }
+  .d3 .cup{ box-shadow:0 0 0 2px #e8c766,0 0 0 6px rgba(232,199,102,.25); }
+  .d3 .seen{ background:rgba(232,199,102,.08); border:1px solid rgba(232,199,102,.3); color:#d8cba0; font-family:Georgia,serif; }
+  .d3 .sec h3{ color:#e8c766; }
+  .d3 .sec p{ color:#e0d8bf; }
+  .d3 .cta{ background:#e0b24a; color:#0e3d40; }
+
+  /* ---- 4: Mistik (modern) ---- */
+  .d4{ background:#0d0b12; color:#e6e2f0; }
+  .d4 .notch{ background:#8b7ff0; }
+  .d4 .brand .moon{ color:#9b8ff5; }
+  .d4 .brand h2{ font-family:-apple-system,"Segoe UI",sans-serif; font-weight:600; letter-spacing:-.5px; color:#f0edfa; }
+  .d4 .brand .sub{ color:#6a6382; text-transform:uppercase; letter-spacing:1.5px; font-size:10px; }
+  .d4 .cup{ box-shadow:0 0 24px rgba(139,127,240,.4); }
+  .d4 .seen{ background:rgba(139,127,240,.1); border:1px solid rgba(139,127,240,.25); color:#b3accb; font-style:normal; }
+  .d4 .sec h3{ color:#9b8ff5; text-transform:uppercase; letter-spacing:1px; font-size:12px; }
+  .d4 .sec p{ color:#cbc6dd; }
+  .d4 .cta{ background:#8b7ff0; color:#0d0b12; }
+</style>
+
+<div class="wrap">
+  <h1>Kahve Falı — dört görsel yön</h1>
+  <p class="lead">Aynı fal ekranı, dört farklı kimlikte. İçerik ve akış sabit; değişen tek şey karakter. Birini seç, onu ürünün her ekranına uygularım. Fontlar burada temsili; seçtiğin yönün gerçek fontunu build'de gömerim.</p>
+
+  <div class="grid">
+
+    <div class="col">
+      <div class="phone d1">
+        <div class="notch"></div>
+        <div class="brand"><div class="moon">☾</div><h2>Kahve Falı</h2><div class="sub">AYŞE TEYZE</div></div>
+        <div class="cup"></div>
+        <div class="seen">Fincanının kenarına yakın bir kuş, dibinden uzanan bir yol ve sapın yanında küçük bir kalp görüyorum canım.</div>
+        <div class="sec"><h3>Aşk</h3><p>O kuş sana yakında bir müjde getiriyor güzelim; kalbindeki düğüm bu ay çözülüyor.</p></div>
+        <div class="cta">Falcı sesinden dinle <small>· 1 jeton</small></div>
+      </div>
+      <div class="meta">
+        <div class="nm">1 · Gece Kahvesi <span>— mistik & premium</span></div>
+        <div class="ds">Koyu espresso zemin, sıcak bakır-altın, klasik serif. Gece samimiyeti, falcı gizemi. Premium his, jetonu haklı çıkarır.</div>
+        <div class="sw"><i style="background:#17100a"></i><i style="background:#d9b877"></i><i style="background:#a9823f"></i><i style="background:#efe2d0"></i></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="phone d2">
+        <div class="notch"></div>
+        <div class="brand"><div class="moon">☕</div><h2>Kahve Falı</h2><div class="sub">Ayşe Teyze</div></div>
+        <div class="cup"></div>
+        <div class="seen">Fincanının kenarına yakın bir kuş, dibinden uzanan bir yol ve sapın yanında küçük bir kalp görüyorum canım.</div>
+        <div class="sec"><h3>Aşk</h3><p>O kuş sana yakında bir müjde getiriyor güzelim; kalbindeki düğüm bu ay çözülüyor.</p></div>
+        <div class="cta">Falcı sesinden dinle <small>· 1 jeton</small></div>
+      </div>
+      <div class="meta">
+        <div class="nm">2 · Fincan <span>— sıcak & editoryal</span></div>
+        <div class="ds">Porselen kremi zemin, kahve kahvesi mürekkep, gül kurusu vurgu. Sabah kahvesi rahatlığı; kadın kitleye samimi, yumuşak.</div>
+        <div class="sw"><i style="background:#f3ede2"></i><i style="background:#b06a4e"></i><i style="background:#4a3626"></i><i style="background:#e5d9c7"></i></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="phone d3">
+        <div class="notch"></div>
+        <div class="brand"><div class="moon">✦</div><h2>Kahve Falı</h2><div class="sub">AYŞE TEYZE</div></div>
+        <div class="cup"></div>
+        <div class="seen">Fincanının kenarına yakın bir kuş, dibinden uzanan bir yol ve sapın yanında küçük bir kalp görüyorum canım.</div>
+        <div class="sec"><h3>Aşk</h3><p>O kuş sana yakında bir müjde getiriyor güzelim; kalbindeki düğüm bu ay çözülüyor.</p></div>
+        <div class="cta">Falcı sesinden dinle <small>· 1 jeton</small></div>
+      </div>
+      <div class="meta">
+        <div class="nm">3 · Çini <span>— Anadolu & otantik</span></div>
+        <div class="ds">İznik çini mavisi, ivory, altın çizgi. Kültürel köke yaslanır, "gerçek falcı" hissi. Rakiplerden en ayrışan, en Türk.</div>
+        <div class="sw"><i style="background:#0e4a4e"></i><i style="background:#e8c766"></i><i style="background:#e0b24a"></i><i style="background:#eae3cf"></i></div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="phone d4">
+        <div class="notch"></div>
+        <div class="brand"><div class="moon">◐</div><h2>Kahve Falı</h2><div class="sub">Ayşe Teyze</div></div>
+        <div class="cup"></div>
+        <div class="seen">Fincanının kenarına yakın bir kuş, dibinden uzanan bir yol ve sapın yanında küçük bir kalp görüyorum canım.</div>
+        <div class="sec"><h3>Aşk</h3><p>O kuş sana yakında bir müjde getiriyor güzelim; kalbindeki düğüm bu ay çözülüyor.</p></div>
+        <div class="cta">Falcı sesinden dinle <small>· 1 jeton</small></div>
+      </div>
+      <div class="meta">
+        <div class="nm">4 · Mistik <span>— modern & sade</span></div>
+        <div class="ds">Neredeyse siyah, tek ametist vurgu, temiz sans, bol boşluk. Genç, TikTok-yerlisi, "AI falcı" modern. Reels'te en iyi durur.</div>
+        <div class="sw"><i style="background:#0d0b12"></i><i style="background:#8b7ff0"></i><i style="background:#6a6382"></i><i style="background:#e6e2f0"></i></div>
+      </div>
+    </div>
+
+  </div>
+</div>
