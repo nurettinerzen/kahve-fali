@@ -365,7 +365,10 @@ function renderReading(r){
 
 async function fetchFal(base64, mimeType){
   try{
-    const res = await fetch(BACKEND, {method:'POST', headers: BASLIK, body: JSON.stringify({image:base64, mimeType})});
+    const ac = new AbortController();
+    const zaman = setTimeout(()=>ac.abort(), 90000);      // soğuk başlatma payıyla üst sınır
+    const res = await fetch(BACKEND, {method:'POST', headers: BASLIK, body: JSON.stringify({image:base64, mimeType}), signal: ac.signal});
+    clearTimeout(zaman);
     if(!res.ok) return null;
     const d = await res.json();
     return d && (d.fincan_mi === false || Array.isArray(d.bolumler)) ? d : null;
@@ -375,15 +378,23 @@ async function fetchFal(base64, mimeType){
 let falBakiliyor = false;                                 // aynı anda ikinci fal başlamasın
 async function startRead(imgSrc, base64, mimeType){
   if(falBakiliyor) return;
-  if(!falHakkiVar()){ paywall(); return; }
+  const ornekMi = !base64;                                // "Fotoğrafsız dene": ücretsiz örnek
+  if(!ornekMi && !falHakkiVar()){ paywall(); return; }
   falBakiliyor = true;
   try{
     $('thumb').src = imgSrc; show('s-load');
-    let reading = MOCK;
-    if(base64){ const live = await fetchFal(base64, mimeType); if(live) reading = live; }
-    else { await new Promise(r=>setTimeout(r, 2200)); }
+    let reading;
+    if(ornekMi){ await new Promise(r=>setTimeout(r, 2200)); reading = MOCK; }
+    else {
+      reading = await fetchFal(base64, mimeType);
+      if(!reading){                                       // sunucuya ulaşılamadı: ücret yok, sahte fal yok
+        show('s-start');
+        bildir('Bağlanamadım canım — bir dakika sonra tekrar dene');
+        return;
+      }
+    }
     const gecerli = renderReading(reading);
-    if(gecerli){
+    if(gecerli && !ornekMi){
       if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
       else jeton -= 1;
       durumYaz();
@@ -413,7 +424,10 @@ async function sesiOynat(){
   btn.innerHTML = "Hikmet Abla sesleniyor<span class='dots'><span>.</span><span>.</span><span>.</span></span>";
   const metin = current.gorulenler + ' ' + current.bolumler.map(b=>b.metin).join(' ') + ' ' + current.kapanis;
   try{
-    const res = await fetch(SES_API, {method:'POST', headers: BASLIK, body: JSON.stringify({text:metin})});
+    const ac = new AbortController();
+    const zaman = setTimeout(()=>ac.abort(), 90000);
+    const res = await fetch(SES_API, {method:'POST', headers: BASLIK, body: JSON.stringify({text:metin}), signal: ac.signal});
+    clearTimeout(zaman);
     if(!res.ok) throw 0;
     sesUrl = URL.createObjectURL(await res.blob());
     jeton -= 1; durumYaz();
