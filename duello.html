@@ -4,100 +4,146 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Çiftler Düellosu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --zemin: #17110f;
-    --kart: #241a17;
-    --kart-2: #2f2320;
-    --cizgi: #3d2e29;
-    --metin: #f3e7e1;
-    --soluk: #a89189;
-    --vurgu: #e8705a;
-    --vurgu-2: #f0b429;
-    --yesil: #5fb98f;
-    --sari: #d9a441;
+    --zemin: #0f0d0b;
+    --kart: #17130f;
+    --kart-2: #1f1a15;
+    --cizgi: #2a241d;
+    --cizgi-2: #3a322a;
+    --metin: #ede6dc;
+    --soluk: #93877a;
+    --vurgu: #c9a26a;        /* şampanya bronz */
+    --vurgu-koyu: #14100c;   /* vurgu üstündeki metin */
+    --yesil: #86b89d;
+    --sari: #c9a26a;
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Manrope", -apple-system, system-ui, sans-serif;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { margin: 0; padding: 0; }
   body {
     background: var(--zemin);
     color: var(--metin);
-    font: 16px/1.5 ui-rounded, -apple-system, "SF Pro Rounded", system-ui, sans-serif;
+    font: 15px/1.55 var(--sans);
     min-height: 100dvh;
     display: flex;
     justify-content: center;
     padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   }
-  #uygulama { width: 100%; max-width: 460px; padding: 20px 18px 40px; }
+  #uygulama { width: 100%; max-width: 460px; padding: 26px 20px 44px; }
 
-  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -0.3px; }
-  h2 { font-size: 20px; margin: 0 0 4px; letter-spacing: -0.2px; }
-  p.alt { color: var(--soluk); margin: 0 0 22px; font-size: 14px; }
+  h1 { font: 500 30px/1.2 var(--serif); margin: 0 0 8px; letter-spacing: 0.2px; }
+  h2 { font: 500 23px/1.25 var(--serif); margin: 0 0 6px; }
+  p.alt { color: var(--soluk); margin: 0 0 24px; font-size: 14px; }
 
-  .kart { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 18px; padding: 18px; margin-bottom: 14px; }
+  .kart { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
 
-  label { display: block; font-size: 13px; color: var(--soluk); margin: 0 0 6px; }
+  label { display: block; font-size: 11px; color: var(--soluk); margin: 0 0 8px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
   input[type=text] {
-    width: 100%; padding: 14px 15px; font-size: 17px; font-family: inherit;
+    width: 100%; padding: 14px 15px; font-size: 16px; font-family: var(--sans);
     background: var(--kart-2); color: var(--metin);
-    border: 1px solid var(--cizgi); border-radius: 13px; outline: none;
+    border: 1px solid var(--cizgi-2); border-radius: 12px; outline: none;
+    transition: border-color .15s;
   }
   input[type=text]:focus { border-color: var(--vurgu); }
-  input.kod { text-transform: uppercase; letter-spacing: 6px; text-align: center; font-size: 24px; font-weight: 600; }
+  input.kod { text-transform: uppercase; letter-spacing: 8px; text-align: center; font-size: 24px; font-weight: 600; }
 
   button {
-    width: 100%; padding: 15px; font: 600 16px/1 inherit; font-family: inherit;
-    background: var(--vurgu); color: #fff; border: 0; border-radius: 13px;
-    cursor: pointer; margin-top: 10px;
+    width: 100%; padding: 15px; font: 700 14px/1 var(--sans); letter-spacing: 0.6px;
+    background: var(--vurgu); color: var(--vurgu-koyu); border: 0; border-radius: 12px;
+    cursor: pointer; margin-top: 10px; text-transform: uppercase;
+    transition: opacity .15s;
   }
   button:disabled { opacity: .4; cursor: default; }
-  button.ikincil { background: transparent; color: var(--soluk); border: 1px solid var(--cizgi); }
+  button.ikincil { background: transparent; color: var(--soluk); border: 1px solid var(--cizgi-2); }
 
-  .ayrac { text-align: center; color: var(--soluk); font-size: 13px; margin: 18px 0; }
+  .ayrac { text-align: center; color: var(--soluk); font-size: 13px; margin: 20px 0; }
 
-  .ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 13px; color: var(--soluk); }
-  .rozet { background: var(--kart-2); border: 1px solid var(--cizgi); border-radius: 99px; padding: 5px 12px; }
+  .ust { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--soluk); }
+  .rozet { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 99px; padding: 6px 14px; letter-spacing: 0.4px; }
+  .premium-etiket { color: var(--vurgu); font-size: 10px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
 
-  .ilerleme { display: flex; gap: 5px; margin-bottom: 20px; }
-  .ilerleme i { flex: 1; height: 4px; border-radius: 99px; background: var(--cizgi); }
+  .ilerleme { display: flex; gap: 5px; margin-bottom: 22px; }
+  .ilerleme i { flex: 1; height: 3px; border-radius: 99px; background: var(--cizgi-2); }
   .ilerleme i.dolu { background: var(--vurgu); }
 
-  .soru { font-size: 23px; font-weight: 600; line-height: 1.35; margin: 0 0 20px; letter-spacing: -0.3px; }
+  .soru { font: 500 25px/1.35 var(--serif); margin: 0 0 22px; }
 
   .sik {
-    display: block; width: 100%; text-align: left; padding: 16px;
-    background: var(--kart); border: 1px solid var(--cizgi); border-radius: 14px;
-    color: var(--metin); font: 16px/1.4 inherit; font-family: inherit; margin: 0 0 10px; cursor: pointer;
+    display: block; width: 100%; text-align: left; padding: 16px 17px;
+    background: var(--kart); border: 1px solid var(--cizgi-2); border-radius: 13px;
+    color: var(--metin); font: 500 15px/1.4 var(--sans); letter-spacing: 0; text-transform: none;
+    margin: 0 0 10px; cursor: pointer; transition: border-color .15s;
   }
-  .sik.secili { border-color: var(--vurgu); background: var(--kart-2); }
+  .sik:active { border-color: var(--vurgu); }
 
-  .kod-kutu { text-align: center; padding: 26px 18px; }
-  .kod-kutu .kod { font-size: 46px; font-weight: 700; letter-spacing: 10px; color: var(--vurgu-2); margin: 8px 0 4px; }
+  .kod-kutu { text-align: center; padding: 30px 18px; }
+  .kod-kutu .kod { font: 600 44px/1 var(--serif); letter-spacing: 12px; color: var(--vurgu); margin: 12px 0 10px; padding-left: 12px; }
 
-  .bekle { text-align: center; padding: 40px 20px; color: var(--soluk); }
-  .nokta { display: inline-block; animation: zipla 1.2s infinite; }
+  .bekle { text-align: center; padding: 44px 20px; color: var(--soluk); }
+  .nokta { display: inline-block; width: 5px; height: 5px; border-radius: 99px; background: var(--soluk); margin: 0 3px; animation: zipla 1.2s infinite; }
   .nokta:nth-child(2) { animation-delay: .15s; }
   .nokta:nth-child(3) { animation-delay: .3s; }
-  @keyframes zipla { 0%, 60%, 100% { opacity: .25 } 30% { opacity: 1 } }
+  @keyframes zipla { 0%, 60%, 100% { opacity: .2 } 30% { opacity: 1 } }
 
-  .satir { border-bottom: 1px solid var(--cizgi); padding: 15px 0; }
-  .satir:last-child { border-bottom: 0; }
-  .satir .s { font-size: 14px; color: var(--soluk); margin-bottom: 9px; }
+  .satir { border-bottom: 1px solid var(--cizgi); padding: 16px 0; }
+  .satir:first-child { padding-top: 2px; }
+  .satir:last-child { border-bottom: 0; padding-bottom: 2px; }
+  .satir .s { font: 500 15px/1.4 var(--serif); color: var(--metin); margin-bottom: 10px; }
   .cift { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .kutu { background: var(--kart-2); border-radius: 11px; padding: 10px 11px; }
-  .kutu .k { font-size: 11px; color: var(--soluk); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
-  .kutu .d { font-size: 15px; line-height: 1.35; }
-  .isaret { font-size: 13px; font-weight: 600; margin-top: 8px; }
+  .kutu { background: var(--kart-2); border-radius: 10px; padding: 10px 12px; }
+  .kutu .k { font-size: 10px; color: var(--soluk); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; margin-bottom: 4px; }
+  .kutu .d { font-size: 14px; line-height: 1.4; }
+  .isaret { font-size: 12.5px; font-weight: 600; margin-top: 9px; }
   .tam { color: var(--yesil); }
   .yakin { color: var(--sari); }
   .uzak { color: var(--soluk); }
 
-  .skor { display: flex; gap: 12px; margin-bottom: 16px; }
-  .skor > div { flex: 1; background: var(--kart-2); border-radius: 14px; padding: 14px; text-align: center; }
-  .skor .ad { font-size: 13px; color: var(--soluk); }
-  .skor .p { font-size: 30px; font-weight: 700; letter-spacing: -1px; }
+  .skor { display: flex; gap: 10px; margin-bottom: 14px; }
+  .skor > div { flex: 1; background: var(--kart); border: 1px solid var(--cizgi); border-radius: 14px; padding: 16px 14px; text-align: center; }
+  .skor .ad { font-size: 11px; color: var(--soluk); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 700; }
+  .skor .p { font: 600 32px/1.1 var(--serif); margin-top: 4px; }
 
-  .hata { background: #46201c; border: 1px solid #6b322b; color: #ffd9d2; padding: 12px 14px; border-radius: 12px; font-size: 14px; margin-bottom: 14px; }
+  .hata { background: #2b1713; border: 1px solid #52302a; color: #e8c0b5; padding: 12px 14px; border-radius: 12px; font-size: 13.5px; margin-bottom: 14px; }
+
+  /* ── ikonlar ── */
+  .ikn { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .ikn-kucuk { width: 15px; height: 15px; }
+
+  /* ── menü ── */
+  .menu-kart { display: flex; align-items: center; gap: 15px; cursor: pointer; transition: border-color .15s; }
+  .menu-kart:active { border-color: var(--cizgi-2); }
+  .menu-kart .ikon-cerceve {
+    width: 42px; height: 42px; border-radius: 12px; flex: none;
+    border: 1px solid var(--cizgi-2); display: flex; align-items: center; justify-content: center;
+    color: var(--vurgu);
+  }
+  .menu-kart .govde { flex: 1; min-width: 0; }
+  .menu-kart .baslik { font-weight: 700; font-size: 15.5px; letter-spacing: 0.1px; }
+  .menu-kart .aciklama { font-size: 13px; color: var(--soluk); margin-top: 2px; }
+  .menu-kart .sag { flex: none; color: var(--soluk); display: flex; align-items: center; }
+  .menu-kart .sag.aktif { color: var(--vurgu); }
+  .menu-kart .sag.tamam { color: var(--yesil); }
+  .gunluk-kart { border-color: var(--cizgi-2); background: linear-gradient(135deg, var(--kart) 55%, #211a12); }
+  .seri { color: var(--vurgu); font-weight: 700; }
+  .bolum-baslik { font-size: 11px; color: var(--soluk); text-transform: uppercase; letter-spacing: 1.6px; font-weight: 700; margin: 26px 2px 10px; }
+
+  /* ── premium duvarı ── */
+  .duvar { text-align: center; padding: 26px 6px 0; }
+  .duvar .amblem {
+    width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 99px;
+    border: 1px solid var(--cizgi-2); display: flex; align-items: center; justify-content: center;
+    color: var(--vurgu);
+  }
+  .duvar .amblem .ikn { width: 26px; height: 26px; }
+  .duvar ul { text-align: left; font-size: 14px; line-height: 1.5; padding: 0; list-style: none; margin: 4px 0 18px; }
+  .duvar ul li { display: flex; gap: 11px; align-items: center; padding: 9px 0; color: var(--metin); }
+  .duvar ul li .ikn-kucuk { color: var(--yesil); }
+  .duvar .not { font-size: 12px; color: var(--soluk); margin-top: 12px; }
 </style>
 </head>
 <body>
@@ -106,6 +152,17 @@
 <script>
 const $ = document.getElementById("uygulama");
 const kacis = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// İnce çizgi ikonlar — emoji yok
+const IKON = {
+  gunes: '<svg class="ikn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5 5l1.8 1.8M17.2 17.2L19 19M19 5l-1.8 1.8M6.8 17.2L5 19"/></svg>',
+  duello: '<svg class="ikn" viewBox="0 0 24 24"><path d="M12 3l6.5 9L12 21l-6.5-9z"/><path d="M12 8.5l2.6 3.5-2.6 3.5-2.6-3.5z"/></svg>',
+  paket: '<svg class="ikn" viewBox="0 0 24 24"><path d="M4 8l8-4.5L20 8v8l-8 4.5L4 16z"/><path d="M4 8l8 4.5L20 8M12 12.5V20.5"/></svg>',
+  ok: '<svg class="ikn ikn-kucuk" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5"/></svg>',
+  kilit: '<svg class="ikn ikn-kucuk" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>',
+  kilitBuyuk: '<svg class="ikn" viewBox="0 0 24 24"><rect x="5.5" y="10.5" width="13" height="9" rx="2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/></svg>',
+  tik: '<svg class="ikn ikn-kucuk" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></svg>',
+};
 
 let oturum = null;      // {kod, oyuncu, token}
 let durum = null;       // sunucudan gelen durum
@@ -133,14 +190,19 @@ async function istek(yol, secenekler = {}) {
 // Ekranı etkileyen şeylerin özeti. Değişmediyse yeniden çizmeyiz —
 // yoksa eşin her cevabında input yeniden yaratılır, imleç kaybolur.
 const ekranAnahtari = (d) =>
-  d ? JSON.stringify([d.faz, d.seviye, d.esBitirdi, d.hazir, !!d.secenekler, d.es?.ad]) : "";
+  d
+    ? JSON.stringify([
+        d.faz, d.aktif?.ad, d.esBitirdi, d.hazir, !!d.secenekler, d.es?.ad,
+        d.premium, d.toplam, d.menu?.gunluk, d.menu?.duelloSeviye, d.menu?.paketler?.filter((p) => p.bitti).length,
+      ])
+    : "";
 
 async function tazele() {
   if (!oturum) return;
   try {
     const yeni = await istek("/api/durum");
     if (durum && yeni.kod === durum.kod && yeni.v < durum.v) return; // geciken eski yanıt, çöpe
-    const fazDegisti = !durum || durum.faz !== yeni.faz;
+    const fazDegisti = !durum || durum.faz !== yeni.faz || durum.aktif?.ad !== yeni.aktif?.ad;
     const cizGerek = ekranAnahtari(durum) !== ekranAnahtari(yeni);
     durum = yeni;
     if (fazDegisti) { indeks = ilkBosSoru(); taslak = ""; }
@@ -159,7 +221,7 @@ function anketBaslat() {
 }
 
 function ilkBosSoru() {
-  if (!durum) return 0;
+  if (!durum || !durum.aktif) return 0;
   const liste = durum.faz === "tahmin" ? durum.benimTahminlerim : durum.benimCevaplarim;
   for (let i = 0; i < durum.soruSayisi; i++) if (!liste?.[i]) return i;
   return durum.soruSayisi;
@@ -180,6 +242,15 @@ async function odayaKatil(kod, ad) {
   anketBaslat();
 }
 
+async function baslat(tur, paketId) {
+  try {
+    durum = await istek("/api/baslat", { govde: { tur, paketId } });
+    indeks = ilkBosSoru();
+    taslak = "";
+    ciz();
+  } catch (e) { hata = e.message; ciz(); }
+}
+
 async function gonder() {
   if (!taslak.trim()) return;
   const yol = durum.faz === "tahmin" ? "/api/tahmin" : "/api/cevap";
@@ -193,7 +264,17 @@ async function gonder() {
 }
 
 async function hazirim() {
-  try { durum = await istek("/api/hazir", { govde: {} }); ciz(); }
+  try { durum = await istek("/api/hazir", { govde: {} }); indeks = 0; taslak = ""; ciz(); }
+  catch (e) { hata = e.message; ciz(); }
+}
+
+async function premiumAc() {
+  try { durum = await istek("/api/premium", { govde: {} }); indeks = 0; taslak = ""; ciz(); }
+  catch (e) { hata = e.message; ciz(); }
+}
+
+async function duvarKapat() {
+  try { durum = await istek("/api/duvar-kapat", { govde: {} }); ciz(); }
   catch (e) { hata = e.message; ciz(); }
 }
 
@@ -209,7 +290,9 @@ function ciz() {
 
   if (!oturum || !durum) return girisEkrani(hataHtml);
   if (durum.faz === "lobi") return lobiEkrani(hataHtml);
-  if (durum.faz === "hazirlaniyor") return bekleEkrani("Sorular hazırlanıyor", "Eşinin cevaplarına göre şıklar üretiliyor.");
+  if (durum.faz === "menu") return menuEkrani(hataHtml);
+  if (durum.faz === "duvar") return duvarEkrani(hataHtml);
+  if (durum.faz === "hazirlaniyor") return bekleEkrani("Hazırlanıyor", durum.aktif?.tip === "sik" ? "Eşinin cevaplarına göre şıklar üretiliyor." : "Cevaplar değerlendiriliyor.");
   if (durum.faz === "sonuc") return sonucEkrani(hataHtml);
 
   const bitti = indeks >= durum.soruSayisi;
@@ -218,7 +301,7 @@ function ciz() {
     if (esBekleniyor) {
       return bekleEkrani(
         `${durum.es?.ad ?? "Eşin"} henüz bitirmedi`,
-        "Sen bitirdin. O da bitirince ekran kendiliğinden ilerleyecek — beklemek zorunda değilsin."
+        "Sen bitirdin. O da bitirince ekran kendiliğinden ilerleyecek."
       );
     }
     return bekleEkrani("Hazırlanıyor", "");
@@ -236,7 +319,7 @@ function girisEkrani(hataHtml) {
       <input type="text" id="ad" placeholder="Örn. Nurettin" autocomplete="given-name" />
       <button id="kurBtn">Yeni oyun kur</button>
     </div>
-    <div class="ayrac">— ya da eşin kurduysa —</div>
+    <div class="ayrac">ya da eşin kurduysa</div>
     <div class="kart">
       <label>Oda kodu</label>
       <input type="text" id="kod" class="kod" maxlength="4" placeholder="····" autocapitalize="characters" autocomplete="off" />
@@ -264,29 +347,134 @@ function lobiEkrani(hataHtml) {
   $.innerHTML = `
     ${hataHtml}
     <div class="kart kod-kutu">
-      <div style="color:var(--soluk);font-size:14px">Eşine bu kodu ver</div>
+      <div style="color:var(--soluk);font-size:13px">Eşine bu kodu ver</div>
       <div class="kod">${kacis(durum.kod)}</div>
       <div style="color:var(--soluk);font-size:13px">Aynı adresi açıp bu kodu girsin.</div>
     </div>
-    <div class="bekle"><span class="nokta">●</span> <span class="nokta">●</span> <span class="nokta">●</span><br><br>Eşin bekleniyor…</div>
+    <div class="bekle"><span class="nokta"></span><span class="nokta"></span><span class="nokta"></span><br><br>Eşin bekleniyor</div>
     <button class="ikincil" id="cikBtn">Vazgeç</button>`;
   document.getElementById("cikBtn").onclick = cik;
+}
+
+// ── ana menü: günlük soru + düello + paketler
+function menuEkrani(hataHtml) {
+  const m = durum.menu;
+  const esAd = durum.es?.ad ?? "eşin";
+  const g = m.gunluk;
+
+  const gunlukSag = g.bugunYapildi
+    ? `<span class="sag tamam">${IKON.tik}</span>`
+    : `<span class="sag aktif">${IKON.ok}</span>`;
+  const gunlukAciklama = g.bugunYapildi
+    ? (g.seri > 0 ? `<span class="seri">${g.seri} gün seri</span> · bugün tamamlandı` : "bugün tamamlandı")
+    : g.seri > 0
+    ? `<span class="seri">${g.seri} gün seri</span> · bugünün sorusu hazır`
+    : "günde bir soru, seriyi başlatın";
+
+  const duelloAciklama = m.duelloBitti
+    ? "Beş bölüm bitti. Baştan oynayın — cevaplar değişti mi?"
+    : `Bölüm ${m.duelloSeviye} · ${kacis(m.duelloAd)}${m.duelloSeviye >= 3 && !durum.premium ? " · Premium" : ""}`;
+
+  const paketHtml = m.paketler
+    .map((p) => {
+      const kilitli = p.premium && !durum.premium;
+      const sag = p.bitti
+        ? `<span class="sag tamam">${IKON.tik}</span>`
+        : kilitli
+        ? `<span class="sag">${IKON.kilit}</span>`
+        : `<span class="sag aktif">${IKON.ok}</span>`;
+      return `
+      <div class="kart menu-kart" data-paket="${p.id}">
+        <div class="govde">
+          <div class="baslik">${kacis(p.ad)}${p.premium ? ' <span class="premium-etiket" style="margin-left:6px">Premium</span>' : ""}</div>
+          <div class="aciklama">${kacis(p.alt)}</div>
+        </div>
+        ${sag}
+      </div>`;
+    })
+    .join("");
+
+  $.innerHTML = `
+    <div class="ust">
+      <span class="rozet">${kacis(durum.ben.ad)} &amp; ${kacis(esAd)}</span>
+      ${durum.premium ? '<span class="premium-etiket">Premium</span>' : ""}
+    </div>
+    ${hataHtml}
+    <div class="skor">
+      <div><div class="ad">${kacis(durum.ben.ad)}</div><div class="p">${durum.toplam[durum.ben.no]}</div></div>
+      <div><div class="ad">${kacis(esAd)}</div><div class="p">${durum.toplam[1 - durum.ben.no]}</div></div>
+    </div>
+
+    <div class="kart menu-kart gunluk-kart" id="gunlukKart">
+      <div class="ikon-cerceve">${IKON.gunes}</div>
+      <div class="govde">
+        <div class="baslik">Günün Sorusu</div>
+        <div class="aciklama">${gunlukAciklama}</div>
+      </div>
+      ${gunlukSag}
+    </div>
+
+    <div class="bolum-baslik">Düello</div>
+    <div class="kart menu-kart" id="duelloKart">
+      <div class="ikon-cerceve">${IKON.duello}</div>
+      <div class="govde">
+        <div class="baslik">${m.duelloBitti ? "Yeniden oyna" : "Devam et"}</div>
+        <div class="aciklama">${duelloAciklama}</div>
+      </div>
+      <span class="sag aktif">${IKON.ok}</span>
+    </div>
+
+    <div class="bolum-baslik">Paketler</div>
+    ${paketHtml}`;
+
+  document.getElementById("gunlukKart").onclick = () => baslat("gunluk");
+  document.getElementById("duelloKart").onclick = () => baslat("duello");
+  $.querySelectorAll("[data-paket]").forEach((k) => {
+    k.onclick = () => baslat("paket", k.dataset.paket);
+  });
+}
+
+// ── premium duvarı: merak en yüksekken gelir
+function duvarEkrani(hataHtml) {
+  $.innerHTML = `
+    ${hataHtml}
+    <div class="duvar">
+      <div class="amblem">${IKON.kilitBuyuk}</div>
+      <h2>Yüzeyi bitirdiniz</h2>
+      <p class="alt">Buraya kadar herkes gelir. Bundan sonrası — varsayımlar, değerler,
+      birbirinizin kırılgan tarafları — sadece derine inmeyi göze alanlara.</p>
+      <div class="kart" style="text-align:left">
+        <ul>
+          <li>${IKON.tik} Düellonun 3, 4 ve 5. bölümleri</li>
+          <li>${IKON.tik} Tüm soru paketleri</li>
+          <li>${IKON.tik} Gelecek tüm yeni paketler</li>
+        </ul>
+        <button id="premiumBtn">Premium'u aç</button>
+        <button class="ikincil" id="vazgecBtn">Şimdi değil</button>
+        <div class="not">Prototip sürümü — şimdilik ücretsiz açılır.</div>
+      </div>
+    </div>`;
+  document.getElementById("premiumBtn").onclick = (e) => { e.target.disabled = true; premiumAc(); };
+  document.getElementById("vazgecBtn").onclick = duvarKapat;
 }
 
 function bekleEkrani(baslik, alt) {
   $.innerHTML = `
     ${ustHtml()}
     <div class="bekle">
-      <span class="nokta">●</span> <span class="nokta">●</span> <span class="nokta">●</span>
-      <h2 style="margin-top:18px">${kacis(baslik)}</h2>
+      <span class="nokta"></span><span class="nokta"></span><span class="nokta"></span>
+      <h2 style="margin-top:20px">${kacis(baslik)}</h2>
       <p class="alt" style="margin-top:8px">${kacis(alt)}</p>
     </div>`;
 }
 
 function ustHtml() {
+  const a = durum.aktif;
+  if (!a) return "";
+  const rozet = a.tur === "duello" ? `Bölüm ${a.seviye} · ${a.ad}` : a.ad;
   const fazAd = durum.faz === "tahmin" ? "Tahmin" : durum.faz === "sonuc" ? "Yüzleşme" : "Kendi cevabın";
   return `<div class="ust">
-    <span class="rozet">Bölüm ${durum.seviye} · ${kacis(durum.seviyeAd)}</span>
+    <span class="rozet">${kacis(rozet)}</span>
     <span>${kacis(fazAd)}</span>
   </div>`;
 }
@@ -298,12 +486,15 @@ function soruEkrani(hataHtml) {
 
   const baslik = tahminMi
     ? `<p class="alt" style="margin-bottom:14px">${kacis(esAd)} bu soruya ne yazdı?</p>`
-    : `<p class="alt" style="margin-bottom:14px">${kacis(durum.seviyeAlt)}</p>`;
+    : `<p class="alt" style="margin-bottom:14px">${kacis(durum.aktif.alt)}</p>`;
 
-  const noktalar = Array.from({ length: durum.soruSayisi }, (_, i) => `<i class="${i < indeks ? "dolu" : ""}"></i>`).join("");
+  const noktalar =
+    durum.soruSayisi > 1
+      ? `<div class="ilerleme">${Array.from({ length: durum.soruSayisi }, (_, i) => `<i class="${i < indeks ? "dolu" : ""}"></i>`).join("")}</div>`
+      : "";
 
   let girisHtml;
-  if (tahminMi && durum.tip === "sik" && durum.secenekler) {
+  if (tahminMi && durum.aktif.tip === "sik" && durum.secenekler) {
     girisHtml = durum.secenekler[indeks]
       .map((s) => `<button class="sik" data-deger="${kacis(s)}">${kacis(s)}</button>`)
       .join("");
@@ -315,13 +506,13 @@ function soruEkrani(hataHtml) {
 
   $.innerHTML = `
     ${ustHtml()}
-    <div class="ilerleme">${noktalar}</div>
+    ${noktalar}
     ${hataHtml}
     ${baslik}
     <div class="soru">${kacis(soru)}</div>
     ${girisHtml}`;
 
-  if (tahminMi && durum.tip === "sik" && durum.secenekler) {
+  if (tahminMi && durum.aktif.tip === "sik" && durum.secenekler) {
     $.querySelectorAll(".sik").forEach((b) => {
       b.onclick = () => { taslak = b.dataset.deger; gonder(); };
     });
@@ -340,7 +531,7 @@ function sonucEkrani(hataHtml) {
   const esAd = durum.es?.ad ?? "Eşin";
   const benAd = durum.ben.ad;
   const puanla = (kademeler) => (kademeler ?? []).reduce((t, k) => t + (k === "tam" ? 10 : k === "yakin" ? 5 : 0), 0);
-  const puansiz = durum.tip === "acik";
+  const puansiz = durum.aktif.tip === "acik";
 
   const isaretMetni = { tam: "Bildin", yakin: "Yaklaştın", uzak: "Bilemedin" };
 
@@ -377,18 +568,17 @@ function sonucEkrani(hataHtml) {
     </div>`;
 
   const beklemede = durum.hazir?.[durum.ben.no] && !durum.hazir?.[1 - durum.ben.no];
-  const dugmeMetni = durum.sonSeviye ? "Yeniden oyna" : "Sonraki bölüme geç";
 
   $.innerHTML = `
     ${ustHtml()}
     ${hataHtml}
     <h2>${puansiz ? "Yüzleşme" : "Bölüm bitti"}</h2>
-    <p class="alt">${kacis(durum.seviyeAlt)}</p>
+    <p class="alt">${kacis(durum.aktif.alt)}</p>
     ${skorHtml}
     <div class="kart">${satirlar}</div>
     ${beklemede
-      ? `<div class="bekle" style="padding:16px">${kacis(esAd)} hazır olunca geçiyoruz…</div>`
-      : `<button id="hazirBtn">${dugmeMetni}</button>`}`;
+      ? `<div class="bekle" style="padding:16px">${kacis(esAd)} hazır olunca menüye dönülecek</div>`
+      : `<button id="hazirBtn">Devam</button>`}`;
 
   const btn = document.getElementById("hazirBtn");
   if (btn) btn.onclick = () => { btn.disabled = true; hazirim(); };
