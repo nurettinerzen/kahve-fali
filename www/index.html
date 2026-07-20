@@ -485,6 +485,10 @@ $('voice').innerHTML = VOICE_LABEL;
 durumYaz();
 girisDurum();
 rcBaslat();
+
+// pazarlama çekimleri: #demo fal ekranını, #paywall jeton çekmecesini açar
+if(location.hash === '#demo'){ localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5'); durumYaz(); setTimeout(()=>$('demo').click(), 400); }
+if(location.hash === '#paywall'){ setTimeout(paywall, 600); }
 </script>
 </body>
 </html>
