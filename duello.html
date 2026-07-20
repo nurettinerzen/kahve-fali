@@ -130,14 +130,21 @@ async function istek(yol, secenekler = {}) {
   return veri;
 }
 
+// Ekranı etkileyen şeylerin özeti. Değişmediyse yeniden çizmeyiz —
+// yoksa eşin her cevabında input yeniden yaratılır, imleç kaybolur.
+const ekranAnahtari = (d) =>
+  d ? JSON.stringify([d.faz, d.seviye, d.esBitirdi, d.hazir, !!d.secenekler, d.es?.ad]) : "";
+
 async function tazele() {
   if (!oturum) return;
   try {
     const yeni = await istek("/api/durum");
+    if (durum && yeni.kod === durum.kod && yeni.v < durum.v) return; // geciken eski yanıt, çöpe
     const fazDegisti = !durum || durum.faz !== yeni.faz;
+    const cizGerek = ekranAnahtari(durum) !== ekranAnahtari(yeni);
     durum = yeni;
     if (fazDegisti) { indeks = ilkBosSoru(); taslak = ""; }
-    ciz();
+    if (cizGerek) ciz();
   } catch (e) {
     oturum = null;
     localStorage.removeItem("duello-oturum");
@@ -324,6 +331,7 @@ function soruEkrani(hataHtml) {
     alan.onkeydown = (e) => { if (e.key === "Enter") gonder(); };
     document.getElementById("ileriBtn").onclick = gonder;
     alan.focus();
+    alan.setSelectionRange(alan.value.length, alan.value.length); // imleç sona
   }
 }
 

@@ -35,7 +35,7 @@ const BANKA = {
     tip: "sik",
     sorular: [
       "En sevdiğin renk ne?",
-      "Dışarıda yemek yesen ne söylersin?",
+      "Dışarıda yemek yesen ne sipariş edersin?",
       "En sevdiğin içecek ne?",
       "Tatilde deniz mi, dağ mı, şehir mi?",
       "Canın tatlı çektiğinde ne yersin?",
@@ -162,9 +162,15 @@ Aşağıda sorular ve bir kişinin GERÇEK cevapları var. Her soru için, gerç
 3 SAHTE cevap üret.
 
 Kurallar — hepsi zorunlu:
+- ÖNCE gerçek cevabın soruyu NASIL yorumladığına bak, sahteleri aynı kategoride üret.
+  ("Dışarıda ne söylersin?" sorusuna gerçek cevap bir yemek adıysa sahteler de yemek adı olsun;
+  gerçek cevap bir yorum cümlesiyse sahteler de yorum cümlesi olsun. Kategori karışırsa gerçek
+  cevap anında sırıtır, oyun ölür.)
 - Sahte cevaplar gerçek cevapla AYNI uzunlukta olsun (gerçek "mantı" ise sahteler tek kelime;
   gerçek "annemin yaptığı mantı" ise sahteler de o kadar detaylı ve kişisel olsun).
-- Aynı üslupta, aynı samimiyette yaz. Gerçek cevap hemen sırıtmasın — oyunun tüm zorluğu bu.
+- Aynı üslupta, aynı samimiyette, aynı özenle yaz. Gerçek cevap kısa ve özensizse (küçük harf,
+  yarım kelime, argo) sahteler de öyle olsun. Gerçek cevap rastgele/saçma bir şeyse ("asd" gibi)
+  sahteler de aynı tarz kısa saçma şeyler olsun ("qwe", "jj", "xx" gibi) — ciddi cevap üretme.
 - Sahteler makul olsun: o kişinin gerçekten diyebileceği, ama demediği şeyler.
 - Gerçek cevapla anlamca çakışmasın (gerçek "mavi" ise "lacivert" yazma, ayırt edilemez olur).
 - Türkçe yaz. Baş harf kullanımını gerçek cevaba benzet.
@@ -175,11 +181,10 @@ Sadece JSON dön, başka hiçbir şey yazma:
 {"sikla": [["sahte1","sahte2","sahte3"], ...]}  // ${sorular.length} adet, soru sırasına göre`;
 
   try {
-    const yanit = await client.messages.create({
-      model: MODEL,
-      max_tokens: 1200,
-      messages: [{ role: "user", content: istek }],
-    });
+    const yanit = await client.messages.create(
+      { model: MODEL, max_tokens: 1200, messages: [{ role: "user", content: istek }] },
+      { timeout: 15000, maxRetries: 1 } // takılırsa oyunu bekletme, yedeğe düş
+    );
     const ham = yanit.content.find((p) => p.type === "text")?.text ?? "";
     const veri = JSON.parse(ham.slice(ham.indexOf("{"), ham.lastIndexOf("}") + 1));
     return cevaplar.map((c, i) => {
@@ -244,11 +249,10 @@ ${liste}
 Sadece JSON dön: {"kademeler": ["tam"|"yakin"|"uzak", ...]}  // ${sorular.length} adet`;
 
   try {
-    const yanit = await client.messages.create({
-      model: MODEL,
-      max_tokens: 400,
-      messages: [{ role: "user", content: istek }],
-    });
+    const yanit = await client.messages.create(
+      { model: MODEL, max_tokens: 400, messages: [{ role: "user", content: istek }] },
+      { timeout: 15000, maxRetries: 1 } // hakem takılırsa basit eşleşmeye düş
+    );
     const ham = yanit.content.find((p) => p.type === "text")?.text ?? "";
     const veri = JSON.parse(ham.slice(ham.indexOf("{"), ham.lastIndexOf("}") + 1));
     return sorular.map((_, i) =>

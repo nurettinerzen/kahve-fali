@@ -6,13 +6,14 @@
 <title>Kahve Falı · Hikmet Abla</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#150e08; --bg2:#1e140b; --gold:#dcbd7c; --gold2:#f2dcaa; --deep:#a9823f;
     --cream:#efe2d0; --muted:#98876c; --card:#241a10; --line:#3a2c1b;
-    --disp:'Fraunces',Georgia,"Times New Roman",serif;
-    --ui:'Manrope',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    --disp:'Playfair Display',Georgia,"Times New Roman",serif;
+    --oku:'Lora',Georgia,"Times New Roman",serif;
+    --ui:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ margin:0; height:100%; }
@@ -34,7 +35,7 @@
 
   .brand{ text-align:center; margin:8px 0 2px; }
   .brand .moon{ font-size:19px; color:var(--gold); filter:drop-shadow(0 0 10px rgba(220,189,124,.45)); }
-  h1{ font-family:var(--disp); font-optical-sizing:auto; font-size:36px; font-weight:500; margin:6px 0 0; letter-spacing:.3px;
+  h1{ font-family:var(--disp); font-size:38px; font-weight:600; margin:6px 0 0; letter-spacing:.2px;
     background:linear-gradient(180deg,#f6e6c0,#d3aa62); -webkit-background-clip:text; background-clip:text; color:transparent;
     filter:drop-shadow(0 2px 14px rgba(220,189,124,.22)); }
   .brand .sub{ color:var(--gold); font-size:11px; letter-spacing:3.5px; font-weight:600; opacity:.7; margin-top:2px; }
@@ -72,18 +73,18 @@
   .load{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; }
   .thumb{ width:154px; height:154px; border-radius:50%; object-fit:cover; border:2px solid var(--gold);
     box-shadow:0 0 0 8px rgba(220,189,124,.08), 0 0 40px rgba(220,189,124,.22); }
-  .loadtxt{ color:var(--gold2); font-size:17px; font-family:var(--disp); font-style:italic; letter-spacing:.2px; }
+  .loadtxt{ color:var(--gold2); font-size:17px; font-family:var(--oku); font-style:italic; letter-spacing:.2px; }
   .dots span{ animation:blink 1.2s infinite; } .dots span:nth-child(2){ animation-delay:.2s } .dots span:nth-child(3){ animation-delay:.4s }
   @keyframes blink{ 0%,100%{ opacity:.2 } 50%{ opacity:1 } }
 
   .reading{ flex:1; display:flex; flex-direction:column; padding-top:8px; }
   .seen{ position:relative; background:linear-gradient(180deg, rgba(220,189,124,.09), rgba(220,189,124,.04));
     border:1px solid rgba(220,189,124,.24); border-radius:16px; padding:16px 18px; font-size:15px; color:#d8c39a;
-    font-style:italic; font-family:var(--disp); margin-bottom:22px; line-height:1.62; }
+    font-style:italic; font-family:var(--oku); margin-bottom:22px; line-height:1.62; }
   .seen::before{ content:"\201C"; position:absolute; top:-6px; left:12px; font-family:var(--disp); font-size:40px; color:var(--gold); opacity:.35; }
   .sec{ margin-bottom:20px; }
   .sec h3{ font-size:13px; margin:0 0 7px; color:var(--gold); font-family:var(--ui); font-weight:700; letter-spacing:1.4px; text-transform:uppercase; }
-  .sec p{ margin:0; font-family:var(--disp); font-optical-sizing:auto; font-size:16px; font-weight:400; line-height:1.78; color:#ece0cd; }
+  .sec p{ margin:0; font-family:var(--oku); font-size:16.5px; font-weight:400; line-height:1.82; color:#ece0cd; }
   .kapanis{ color:var(--gold2)!important; font-style:italic; }
   .voicebar{ position:sticky; bottom:0; padding:18px 0 4px; background:linear-gradient(transparent,var(--bg) 36%); }
   .voice{ width:100%; padding:17px; border-radius:15px; border:none; cursor:pointer; font-family:var(--ui); font-size:15px; font-weight:700; letter-spacing:.2px;
@@ -96,7 +97,7 @@
   .again{ margin-top:12px; }
 
   .uyari{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center; }
-  .uyari p{ font-family:var(--disp); font-size:18px; color:#d8c39a; line-height:1.6; max-width:290px; margin:0; font-style:italic; }
+  .uyari p{ font-family:var(--oku); font-size:18px; color:#d8c39a; line-height:1.65; max-width:290px; margin:0; font-style:italic; }
 
   .overlay{ position:fixed; inset:0; background:rgba(6,4,2,.82); backdrop-filter:blur(4px); display:none; align-items:flex-end; justify-content:center; z-index:9; }
   .overlay.on{ display:flex; }
@@ -198,7 +199,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Jeton al</h2>
-    <p class="lead">İlk falın Hikmet Abla'dan hediye. Sonraki her fal 1 jeton; sesinden dinlemek istersen +1 jeton.</p>
+    <p class="lead">İlk 2 falın Hikmet Abla'dan hediye. Sonraki her fal 1 jeton; sesinden dinlemek istersen +1 jeton.</p>
     <div class="pak" data-jeton="1"><div class="l"><span class="n">Tek fal</span><span class="d">1 jeton</span></div><span class="p">₺29</span></div>
     <div class="pak best" data-jeton="5"><div class="l"><span class="n">5 fal <span class="badge">POPÜLER</span></span><span class="d">5 jeton · tanesi ₺20</span></div><span class="p">₺99</span></div>
     <div class="pak" data-jeton="20"><div class="l"><span class="n">20 fal</span><span class="d">20 jeton · tanesi ₺12</span></div><span class="p">₺249</span></div>
@@ -207,9 +208,9 @@
 </div>
 
 <script>
-// Canlıya çıkarken API_BASE'i deploy adresinle değiştir (örn. https://kahve-fali-api.up.railway.app)
-const API_BASE = 'http://localhost:8788';
-const APP_KEY  = 'degistir-beni';        // backend'deki APP_KEY ile aynı olmalı
+// Canlı backend (Render). Yerelde test için: 'http://localhost:8788'
+const API_BASE = 'https://kahve-fali-api.onrender.com';
+const APP_KEY  = 'ESOCSq_Yxj1_ILj9gMMNxXXwf9R7ylW4';   // backend'deki APP_KEY ile aynı
 const BACKEND = API_BASE + '/api/fal';
 const SES_API = API_BASE + '/api/ses';
 const BASLIK  = { 'content-type':'application/json', 'x-app-key': APP_KEY };
@@ -229,9 +230,10 @@ const MOCK = {
   kapanis:'Fincanın açık, niyetin güzel. Gördüklerim hayırlı olsun canım.'
 };
 
+const BEDAVA_HAK = 2;                                   // hediye fal sayısı
 let current = MOCK;
 let jeton = parseInt(localStorage.getItem('jeton') ?? '0', 10);
-let bedavaKullanildi = localStorage.getItem('bedavaFal') === '1';
+let bedavaSayi = parseInt(localStorage.getItem('bedavaSayi') ?? (localStorage.getItem('bedavaFal') === '1' ? '1' : '0'), 10);
 let sesUrl = null;
 
 const $=id=>document.getElementById(id);
@@ -239,11 +241,13 @@ function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.r
 function durumYaz(){
   $('jetonSay').textContent = jeton;
   localStorage.setItem('jeton', jeton);
-  localStorage.setItem('bedavaFal', bedavaKullanildi ? '1' : '0');
-  if(!bedavaKullanildi){ $('fiyatNot').textContent = 'İlk falın Hikmet Abla\'dan hediye'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
+  localStorage.setItem('bedavaSayi', bedavaSayi);
+  const kalan = BEDAVA_HAK - bedavaSayi;
+  if(kalan >= BEDAVA_HAK){ $('fiyatNot').textContent = 'İlk ' + BEDAVA_HAK + ' falın Hikmet Abla\'dan hediye'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
+  else if(kalan > 0){ $('fiyatNot').textContent = kalan + ' hediye falın kaldı'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
   else { $('fiyatNot').textContent = 'Her fal 1 jeton · sesli dinleme +1 jeton'; $('ctaLabel').textContent = 'Fal bak · 1 jeton'; }
 }
-function falHakkiVar(){ return !bedavaKullanildi || jeton >= 1; }
+function falHakkiVar(){ return bedavaSayi < BEDAVA_HAK || jeton >= 1; }
 function paywall(){ $('overlay').classList.add('on'); }
 
 function renderReading(r){
@@ -279,7 +283,7 @@ async function startRead(imgSrc, base64, mimeType){
   else { await new Promise(r=>setTimeout(r, 2200)); }
   const gecerli = renderReading(reading);
   if(gecerli){
-    if(!bedavaKullanildi) bedavaKullanildi = true;
+    if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
     else jeton -= 1;
     durumYaz();
   }
