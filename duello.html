@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#f6f2ea" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Düello" />
-<title>Çiftler Düellosu</title>
+<meta name="apple-mobile-web-app-title" content="Duello" />
+<title>Duello</title>
 <link rel="manifest" href="/manifest.webmanifest" />
 <link rel="apple-touch-icon" href="/ikon-180.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -269,9 +269,10 @@ async function odayaKatil(govde) {
 
 async function davetPaylas() {
   const link = `${location.origin}${location.pathname}?davet=${durum.davet}`;
-  const metin = `${durum.ben.ad} seni Çiftler Düellosu'na davet ediyor`;
+  // Sadece url paylaşılır: text+url birlikte verilince iOS'un "Kopyala"sı
+  // ikisini yapıştırıp linki çiftliyordu.
   if (navigator.share) {
-    try { await navigator.share({ title: "Çiftler Düellosu", text: metin, url: link }); return; }
+    try { await navigator.share({ url: link }); return; }
     catch (e) { if (e.name === "AbortError") return; }
   }
   try {
@@ -399,12 +400,12 @@ async function davetKontrol() {
 
 function girisEkrani(hataHtml) {
   $.innerHTML = `
-    <h1>Çiftler Düellosu</h1>
+    <h1>Duello</h1>
     <p class="alt">Birbirinizi ne kadar tanıyorsunuz? Her bölüm biraz daha derinleşiyor.</p>
     ${hataHtml}
     <div class="kart">
       <label>Adın</label>
-      <input type="text" id="ad" placeholder="Örn. Nurettin" autocomplete="given-name" />
+      <input type="text" id="ad" placeholder="Örn. Selen" autocomplete="given-name" />
       <button id="kurBtn">Yeni oyun kur</button>
     </div>
     <div class="ayrac">ya da eşin kod verdiyse</div>

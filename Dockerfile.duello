@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY duello-api.mjs duello.html manifest.webmanifest sw.js ikon-192.png ikon-512.png ikon-180.png ikon.svg ./
+COPY duello-api.mjs duello.html manifest.webmanifest sw.js ikon-192.png ikon-512.png ikon-180.png ./
 
 ENV PORT=8791
 EXPOSE 8791

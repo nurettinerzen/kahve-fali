@@ -1,6 +1,6 @@
 {
-  "name": "Çiftler Düellosu",
-  "short_name": "Düello",
+  "name": "Duello",
+  "short_name": "Duello",
   "description": "Birbirinizi ne kadar tanıyorsunuz? Her bölüm biraz daha derinleşiyor.",
   "start_url": "/duello.html",
   "scope": "/",
