@@ -197,13 +197,13 @@ createServer(async (req, res) => {
 
   if (req.method === "GET" && req.url.startsWith("/health")) {
     res.writeHead(200, { "content-type": "application/json" });
-    return res.end(JSON.stringify({ ok: true, surum: 3, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
+    return res.end(JSON.stringify({ ok: true, surum: 4, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
   }
 
-  // politika sayfaları (App Store'un istediği herkese açık URL'ler)
-  if (req.method === "GET" && (req.url.startsWith("/gizlilik") || req.url.startsWith("/kullanim"))) {
+  // politika + destek sayfaları (App Store'un istediği herkese açık URL'ler)
+  if (req.method === "GET" && (req.url.startsWith("/gizlilik") || req.url.startsWith("/kullanim") || req.url.startsWith("/destek"))) {
     try {
-      const ad = req.url.startsWith("/gizlilik") ? "gizlilik" : "kullanim";
+      const ad = req.url.startsWith("/gizlilik") ? "gizlilik" : req.url.startsWith("/destek") ? "destek" : "kullanim";
       const sayfa = readFileSync(new URL(`./docs/${ad}.html`, import.meta.url));
       res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
       return res.end(sayfa);
