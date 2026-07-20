@@ -1,0 +1,12 @@
+node_modules
+.env
+.env.example
+duello-odalar.json
+*.log
+.claude
+su-siralama.html
+kahve-fali.html
+tasarim-yonleri.html
+fal-api.mjs
+fal-sozluk.json
+statik.mjs

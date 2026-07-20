@@ -177,7 +177,7 @@ createServer(async (req, res) => {
 
   if (req.method === "GET" && req.url.startsWith("/health")) {
     res.writeHead(200, { "content-type": "application/json" });
-    return res.end(JSON.stringify({ ok: true, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
+    return res.end(JSON.stringify({ ok: true, surum: 2, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
   }
   if (req.method !== "POST") return res.writeHead(404).end();
 

@@ -1,0 +1,12 @@
+# Çiftler Düellosu — Fly.io imajı (fly.toml bunu kullanır)
+FROM node:22-slim
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY duello-api.mjs duello.html manifest.webmanifest sw.js ikon-192.png ikon-512.png ikon-180.png ikon.svg ./
+
+ENV PORT=8791
+EXPOSE 8791
+CMD ["node", "duello-api.mjs"]

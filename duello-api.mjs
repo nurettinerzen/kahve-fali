@@ -239,7 +239,7 @@ const SORU_SAYISI = 5; // düello + paket bölümleri; günlük tek soru
 const PUAN = { tam: 10, yakin: 5, uzak: 0 };
 
 // ─────────────────────────────────────────────────────────── kalıcılık
-const ODA_DOSYASI = join(ROOT, "duello-odalar.json");
+const ODA_DOSYASI = join(process.env.VERI_DIZINI || ROOT, "duello-odalar.json"); // Fly'da /data (kalıcı disk)
 const odalar = new Map();
 try {
   for (const [k, o] of JSON.parse(readFileSync(ODA_DOSYASI, "utf8"))) odalar.set(k, o);
@@ -536,6 +536,7 @@ function durum(oda, ben) {
     es: oda.oyuncular[es] ? { ad: oda.oyuncular[es].ad } : null,
     toplam: oda.toplam,
     premium: oda.premium,
+    davet: !oda.oyuncular[es] ? oda.davetToken : undefined, // lobide paylaşmak için
     menu: {
       duelloSeviye: Math.min(oda.duelloSeviye, 6),
       duelloAd: BANKA[Math.min(oda.duelloSeviye, 5)].ad,
@@ -670,14 +671,21 @@ createServer(async (req, res) => {
       return json(res, 404, { hata: "Bu davet linki geçersiz ya da daha önce kullanılmış." });
     }
 
-    // ── odaya katıl
+    // ── odaya katıl (davet linkiyle ya da oda koduyla)
     if (yol === "/api/katil" && req.method === "POST") {
-      const { kod, ad } = await govde(req);
-      const oda = odalar.get((kod || "").toUpperCase().trim());
-      if (!oda) return json(res, 404, { hata: "Böyle bir oda yok." });
+      const { kod, ad, davet } = await govde(req);
+      let oda = null;
+      if (davet) {
+        for (const o of odalar.values()) if (o.davetToken && o.davetToken === davet) { oda = o; break; }
+        if (!oda) return json(res, 404, { hata: "Bu davet linki geçersiz ya da daha önce kullanılmış." });
+      } else {
+        oda = odalar.get((kod || "").toUpperCase().trim());
+        if (!oda) return json(res, 404, { hata: "Böyle bir oda yok." });
+      }
       if (oda.oyuncular[1]) return json(res, 409, { hata: "Bu oda dolu." });
       if (!ad?.trim()) return json(res, 400, { hata: "Adını yaz." });
       oda.oyuncular[1] = { ad: ad.trim().slice(0, 20), token: randomUUID() };
+      oda.davetToken = null; // tek kullanımlık — link artık ölü
       oda.faz = "menu";
       oda.v++;
       kaydet();
