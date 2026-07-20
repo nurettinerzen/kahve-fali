@@ -429,17 +429,20 @@ $('girisOverlay').addEventListener('click', e=>{ if(e.target===$('girisOverlay')
 document.querySelectorAll('.pak').forEach(p=>{
   p.onclick = async ()=>{
     const adet = parseInt(p.dataset.jeton, 10);
-    if(rcUrunler){
-      const urun = rcUrunler[URUNLER[String(adet)]];
-      if(!urun){ alert('Ürün mağazada bulunamadı'); return; }
+    if(NATIVE){
+      // gerçek cihazda SADECE gerçek IAP — mağaza yoksa asla bedava jeton verme
+      if(!rcUrunler){ await rcBaslat(); }                 // kopmuşsa yeniden bağlanmayı dene
+      const urun = rcUrunler && rcUrunler[URUNLER[String(adet)]];
+      if(!urun){ bildir('Mağazaya bağlanılamadı — biraz sonra tekrar dene'); return; }
       try{
         const { Purchases } = Eklenti();
         await Purchases.purchaseStoreProduct({ product: urun });
-        jeton += adet; durumYaz();                       // ödeme Apple'dan onaylandı
+        jeton += adet; durumYaz();                        // ödeme Apple'dan onaylandı
         $('overlay').classList.remove('on');
+        bildir(adet + ' jeton hesabına eklendi');
       }catch(e){ /* kullanıcı vazgeçti ya da ödeme reddedildi — sessiz geç */ }
     } else {
-      jeton += adet; durumYaz();                          // web/demo modu
+      jeton += adet; durumYaz();                          // yalnızca web önizleme/demo
       $('overlay').classList.remove('on');
     }
   };
