@@ -118,6 +118,7 @@
   .pak{ display:flex; align-items:center; justify-content:space-between; padding:16px 17px; border:1px solid var(--line); border-radius:16px;
     margin-bottom:11px; cursor:pointer; background:rgba(255,255,255,.02); transition:transform .12s ease, border-color .2s; }
   .pak:active{ transform:scale(.99) }
+  .pak.bekliyor{ opacity:.5; pointer-events:none; }
   .pak.best{ border-color:rgba(220,189,124,.6); background:linear-gradient(180deg, rgba(220,189,124,.08), rgba(220,189,124,.02)); }
   .pak .l{ display:flex; flex-direction:column; gap:3px; }
   .pak .n{ font-size:15px; font-weight:600; color:var(--cream); display:flex; align-items:center; gap:8px; }
@@ -371,18 +372,23 @@ async function fetchFal(base64, mimeType){
   }catch{ return null; }
 }
 
+let falBakiliyor = false;                                 // aynı anda ikinci fal başlamasın
 async function startRead(imgSrc, base64, mimeType){
+  if(falBakiliyor) return;
   if(!falHakkiVar()){ paywall(); return; }
-  $('thumb').src = imgSrc; show('s-load');
-  let reading = MOCK;
-  if(base64){ const live = await fetchFal(base64, mimeType); if(live) reading = live; }
-  else { await new Promise(r=>setTimeout(r, 2200)); }
-  const gecerli = renderReading(reading);
-  if(gecerli){
-    if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
-    else jeton -= 1;
-    durumYaz();
-  }
+  falBakiliyor = true;
+  try{
+    $('thumb').src = imgSrc; show('s-load');
+    let reading = MOCK;
+    if(base64){ const live = await fetchFal(base64, mimeType); if(live) reading = live; }
+    else { await new Promise(r=>setTimeout(r, 2200)); }
+    const gecerli = renderReading(reading);
+    if(gecerli){
+      if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
+      else jeton -= 1;
+      durumYaz();
+    }
+  } finally { falBakiliyor = false; }
 }
 
 $('file').addEventListener('change', e=>{
@@ -397,10 +403,13 @@ $('demo').onclick=()=> startRead(CUP_SVG, null, null);
 function reset(){ show('s-start'); }
 $('again').onclick=reset; $('resetBtn').onclick=reset; $('uyariBtn').onclick=reset;
 
+let sesYukleniyor = false;                                // çift dokunma = çift jeton olmasın
 async function sesiOynat(){
   const btn=$('voice');
   if(sesUrl){ new Audio(sesUrl).play(); return; }
+  if(sesYukleniyor) return;
   if(jeton < 1){ paywall(); return; }
+  sesYukleniyor = true;
   btn.innerHTML = "Hikmet Abla sesleniyor<span class='dots'><span>.</span><span>.</span><span>.</span></span>";
   const metin = current.gorulenler + ' ' + current.bolumler.map(b=>b.metin).join(' ') + ' ' + current.kapanis;
   try{
@@ -416,6 +425,7 @@ async function sesiOynat(){
       const tr=synth.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('tr')); if(tr) u.voice=tr; synth.speak(u); }
     btn.classList.add('playing'); btn.innerHTML = IC_SOUND + " Dinleniyor…";
   }
+  finally{ sesYukleniyor = false; }
 }
 $('voice').onclick = sesiOynat;
 
@@ -426,21 +436,26 @@ $('overlay').addEventListener('click', e=>{ if(e.target===$('overlay')) $('overl
 $('girisOverlay').addEventListener('click', e=>{ if(e.target===$('girisOverlay')) $('girisOverlay').classList.remove('on'); });
 
 // ---- jeton satın alma: native'de gerçek IAP (RevenueCat), web'de demo ----
+let satinAliniyor = false;                                // çift dokunma kilidi
 document.querySelectorAll('.pak').forEach(p=>{
   p.onclick = async ()=>{
+    if(satinAliniyor) return;                             // işlem sürerken yeni dokunuşları yut
     const adet = parseInt(p.dataset.jeton, 10);
     if(NATIVE){
-      // gerçek cihazda SADECE gerçek IAP — mağaza yoksa asla bedava jeton verme
-      if(!rcUrunler){ await rcBaslat(); }                 // kopmuşsa yeniden bağlanmayı dene
-      const urun = rcUrunler && rcUrunler[URUNLER[String(adet)]];
-      if(!urun){ bildir('Mağazaya bağlanılamadı — biraz sonra tekrar dene'); return; }
+      satinAliniyor = true;
+      p.classList.add('bekliyor');                        // anında görsel tepki
       try{
+        // gerçek cihazda SADECE gerçek IAP — mağaza yoksa asla bedava jeton verme
+        if(!rcUrunler){ await rcBaslat(); }               // kopmuşsa yeniden bağlanmayı dene
+        const urun = rcUrunler && rcUrunler[URUNLER[String(adet)]];
+        if(!urun){ bildir('Mağazaya bağlanılamadı — biraz sonra tekrar dene'); return; }
         const { Purchases } = Eklenti();
         await Purchases.purchaseStoreProduct({ product: urun });
         jeton += adet; durumYaz();                        // ödeme Apple'dan onaylandı
         $('overlay').classList.remove('on');
         bildir(adet + ' jeton hesabına eklendi');
       }catch(e){ /* kullanıcı vazgeçti ya da ödeme reddedildi — sessiz geç */ }
+      finally{ satinAliniyor = false; p.classList.remove('bekliyor'); }
     } else {
       jeton += adet; durumYaz();                          // yalnızca web önizleme/demo
       $('overlay').classList.remove('on');
