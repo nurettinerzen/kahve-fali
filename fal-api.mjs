@@ -159,6 +159,26 @@ if (process.argv.includes("--sesler")) {
   process.exit(0);
 }
 
+// ---- kullanıcı kaydı (Apple ile giriş -> Supabase) ----
+const SUPABASE_URL = process.env.SUPABASE_URL || "";
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || "";
+
+async function kullaniciKaydet({ apple_sub, email, ad, pazarlama_izni }) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Supabase yapılandırılmamış");
+  if (!apple_sub) throw new Error("apple_sub zorunlu");
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/kullanicilar?on_conflict=apple_sub`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      authorization: `Bearer ${SUPABASE_KEY}`,
+      "content-type": "application/json",
+      prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify([{ apple_sub, email: email || null, ad: ad || null, pazarlama_izni: Boolean(pazarlama_izni) }]),
+  });
+  if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+}
+
 // ---- server ----
 async function readBody(req) {
   let body = "", boyut = 0;
@@ -201,6 +221,13 @@ createServer(async (req, res) => {
       const fal = await falBak(image, mimeType);
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify(fal));
+    }
+
+    if (req.url.startsWith("/api/kayit")) {
+      const govde = await readBody(req);
+      await kullaniciKaydet(govde);
+      res.writeHead(200, { "content-type": "application/json" });
+      return res.end(JSON.stringify({ ok: true }));
     }
 
     if (req.url.startsWith("/api/ses")) {

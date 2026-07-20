@@ -121,7 +121,10 @@
 <div class="app">
   <div class="top">
     <div class="jeton" id="jetonBtn"><span class="coin"></span><span id="jetonSay">0</span> jeton</div>
-    <button class="ghost" id="resetBtn">Yeni fal</button>
+    <div style="display:flex; gap:16px; align-items:center">
+      <button class="ghost" id="girisBtn">Giriş</button>
+      <button class="ghost" id="resetBtn">Yeni fal</button>
+    </div>
   </div>
   <div class="brand">
     <div class="moon">☾</div>
@@ -196,6 +199,28 @@
   </section>
 </div>
 
+<!-- GİRİŞ MODALI -->
+<div class="overlay" id="girisOverlay">
+  <div class="sheet">
+    <div class="grip"></div>
+    <div id="girisYok">
+      <h2>Hesap</h2>
+      <p class="lead">Hesap açarsan fal geçmişin ve jetonların ileride tüm cihazlarında seninle gelir.</p>
+      <label style="display:flex; gap:10px; align-items:flex-start; font-size:13px; color:var(--muted); line-height:1.5; margin:0 0 16px; cursor:pointer;">
+        <input type="checkbox" id="pazarlamaIzni" style="margin-top:2px; accent-color:#dcbd7c;">
+        <span>Kampanya ve yeniliklerden e-posta ile haberdar olmak istiyorum. <a href="gizlilik.html" style="color:var(--muted)">Aydınlatma metni</a></span>
+      </label>
+      <button class="cta" id="appleGiris" style="background:#fff; color:#000; box-shadow:none;"> Apple ile devam et</button>
+    </div>
+    <div id="girisVar" style="display:none">
+      <h2>Hesabım</h2>
+      <p class="lead" id="girisEmail"></p>
+      <button class="cta ghost-btn" id="cikis" style="margin-top:0">Çıkış yap</button>
+    </div>
+    <button class="kapat" id="girisKapat">Kapat</button>
+  </div>
+</div>
+
 <!-- JETON MODALI -->
 <div class="overlay" id="overlay">
   <div class="sheet">
@@ -215,7 +240,30 @@ const API_BASE = 'https://kahve-fali-api-rz16.onrender.com';
 const APP_KEY  = 'ESOCSq_Yxj1_ILj9gMMNxXXwf9R7ylW4';   // backend'deki APP_KEY ile aynı
 const BACKEND = API_BASE + '/api/fal';
 const SES_API = API_BASE + '/api/ses';
+const KAYIT_API = API_BASE + '/api/kayit';
 const BASLIK  = { 'content-type':'application/json', 'x-app-key': APP_KEY };
+
+// ---- mağaza / native yapılandırma ----
+const RC_KEY = 'BURAYA_REVENUECAT_IOS_KEY';          // RevenueCat > API keys > Apple (appl_...)
+const URUNLER = { '1':'jeton_1', '5':'jeton_5', '20':'jeton_20' };   // App Store Connect ürün ID'leri
+const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const Eklenti = () => (window.Capacitor && window.Capacitor.Plugins) || {};
+let rcUrunler = null;   // productId -> StoreProduct
+
+async function rcBaslat(){
+  if(!NATIVE || !RC_KEY.startsWith('appl_')) return;   // web'de ya da anahtar girilmeden: demo satın alma
+  try{
+    const { Purchases } = Eklenti();
+    await Purchases.configure({ apiKey: RC_KEY });
+    const { products } = await Purchases.getProducts({ productIdentifiers: Object.values(URUNLER) });
+    rcUrunler = {};
+    for(const u of products){
+      rcUrunler[u.identifier] = u;
+      const kutu = document.querySelector(`.pak[data-jeton="${Object.keys(URUNLER).find(k=>URUNLER[k]===u.identifier)}"] .p`);
+      if(kutu && u.priceString) kutu.textContent = u.priceString;   // gerçek mağaza fiyatı
+    }
+  }catch(e){ console.warn('RevenueCat başlatılamadı', e); rcUrunler = null; }
+}
 
 const IC_SOUND = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7"/></svg>';
 const VOICE_LABEL = IC_SOUND + " Hikmet Abla'nın sesinden dinle <small>· +1 jeton</small>";
@@ -327,12 +375,62 @@ $('voice').onclick = sesiOynat;
 
 $('jetonBtn').onclick = paywall;
 $('kapat').onclick = ()=> $('overlay').classList.remove('on');
+
+// ---- jeton satın alma: native'de gerçek IAP (RevenueCat), web'de demo ----
 document.querySelectorAll('.pak').forEach(p=>{
-  p.onclick = ()=>{ jeton += parseInt(p.dataset.jeton, 10); durumYaz(); $('overlay').classList.remove('on'); };
+  p.onclick = async ()=>{
+    const adet = parseInt(p.dataset.jeton, 10);
+    if(rcUrunler){
+      const urun = rcUrunler[URUNLER[String(adet)]];
+      if(!urun){ alert('Ürün mağazada bulunamadı'); return; }
+      try{
+        const { Purchases } = Eklenti();
+        await Purchases.purchaseStoreProduct({ product: urun });
+        jeton += adet; durumYaz();                       // ödeme Apple'dan onaylandı
+        $('overlay').classList.remove('on');
+      }catch(e){ /* kullanıcı vazgeçti ya da ödeme reddedildi — sessiz geç */ }
+    } else {
+      jeton += adet; durumYaz();                          // web/demo modu
+      $('overlay').classList.remove('on');
+    }
+  };
 });
+
+// ---- Apple ile giriş ----
+function girisDurum(){
+  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  $('girisBtn').textContent = k ? 'Hesabım' : 'Giriş';
+  $('girisYok').style.display = k ? 'none' : '';
+  $('girisVar').style.display = k ? '' : 'none';
+  if(k) $('girisEmail').textContent = k.email || 'Apple hesabınla giriş yapıldı';
+}
+$('girisBtn').onclick = ()=> $('girisOverlay').classList.add('on');
+$('girisKapat').onclick = ()=> $('girisOverlay').classList.remove('on');
+$('cikis').onclick = ()=>{ localStorage.removeItem('kullanici'); girisDurum(); };
+$('appleGiris').onclick = async ()=>{
+  if(!NATIVE){ alert('Apple ile giriş yalnızca iPhone uygulamasında çalışır.'); return; }
+  try{
+    const { SignInWithApple } = Eklenti();
+    const { response } = await SignInWithApple.authorize({ scopes: 'email name' });
+    const kullanici = {
+      sub: response.user,
+      email: response.email || null,
+      ad: [response.givenName, response.familyName].filter(Boolean).join(' ') || null,
+    };
+    localStorage.setItem('kullanici', JSON.stringify(kullanici));
+    girisDurum();
+    fetch(KAYIT_API, { method:'POST', headers: BASLIK, body: JSON.stringify({
+      apple_sub: kullanici.sub, email: kullanici.email, ad: kullanici.ad,
+      pazarlama_izni: $('pazarlamaIzni').checked,
+    })}).catch(()=>{});
+    $('girisOverlay').classList.remove('on');
+  }catch(e){ /* kullanıcı vazgeçti */ }
+};
 
 $('voice').innerHTML = VOICE_LABEL;
 durumYaz();
+girisDurum();
+rcBaslat();
 </script>
 </body>
 </html>

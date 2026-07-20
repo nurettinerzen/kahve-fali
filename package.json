@@ -14,7 +14,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.111.0"
+    "@anthropic-ai/sdk": "^0.111.0",
+    "@capacitor-community/apple-sign-in": "^7.1.0",
+    "@revenuecat/purchases-capacitor": "^11.3.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.6.8",
