@@ -14,7 +14,9 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.111.0",
+    "@anthropic-ai/sdk": "^0.111.0"
+  },
+  "devDependencies": {
     "@capacitor/cli": "^7.6.8",
     "@capacitor/core": "^7.6.8",
     "@capacitor/ios": "^7.6.8"
