@@ -243,7 +243,7 @@
   <div class="sheet">
     <div class="grip"></div>
     <h2>Jeton al</h2>
-    <p class="lead">İlk 2 falın Hikmet Abla'dan hediye. Sonraki her fal 1 jeton; sesinden dinlemek istersen +1 jeton.</p>
+    <p class="lead">İlk falın Hikmet Abla'dan hediye. Sonrası her fal 1 jeton; sesinden dinlemek istersen +1 jeton.</p>
     <div class="pak" data-jeton="1"><div class="l"><span class="n">Tek fal</span><span class="d">1 jeton</span></div><span class="p">₺29</span></div>
     <div class="pak best" data-jeton="5"><div class="l"><span class="n">5 fal <span class="badge">POPÜLER</span></span><span class="d">5 jeton · tanesi ₺20</span></div><span class="p">₺99</span></div>
     <div class="pak" data-jeton="20"><div class="l"><span class="n">20 fal</span><span class="d">20 jeton · tanesi ₺12</span></div><span class="p">₺249</span></div>
@@ -297,7 +297,7 @@ const MOCK = {
   kapanis:'Fincanın açık, niyetin güzel. Gördüklerim hayırlı olsun canım.'
 };
 
-const BEDAVA_HAK = 2;                                   // hediye fal sayısı
+const BEDAVA_HAK = 1;                                   // hediye fal sayısı
 let current = MOCK;
 let jeton = parseInt(localStorage.getItem('jeton') ?? '0', 10);
 let bedavaSayi = parseInt(localStorage.getItem('bedavaSayi') ?? (localStorage.getItem('bedavaFal') === '1' ? '1' : '0'), 10);
@@ -312,8 +312,7 @@ function durumYaz(){
   localStorage.setItem('jeton', jeton);
   localStorage.setItem('bedavaSayi', bedavaSayi);
   const kalan = BEDAVA_HAK - bedavaSayi;
-  if(kalan >= BEDAVA_HAK){ $('fiyatNot').textContent = 'İlk ' + BEDAVA_HAK + ' falın Hikmet Abla\'dan hediye'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
-  else if(kalan > 0){ $('fiyatNot').textContent = kalan + ' hediye falın kaldı'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
+  if(kalan >= 1){ $('fiyatNot').textContent = 'İlk falın Hikmet Abla\'dan hediye'; $('ctaLabel').textContent = 'Fincanımın fotoğrafını çek'; }
   else { $('fiyatNot').textContent = 'Her fal 1 jeton · sesli dinleme +1 jeton'; $('ctaLabel').textContent = 'Fal bak · 1 jeton'; }
 }
 function falHakkiVar(){ return bedavaSayi < BEDAVA_HAK || jeton >= 1; }
