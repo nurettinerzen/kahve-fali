@@ -181,7 +181,7 @@
     <input type="file" id="file" accept="image/*" capture="environment">
     <p style="text-align:center; font-size:11.5px; color:var(--muted); line-height:1.6; margin:14px 0 0;">
       Fallar yapay zekâ ile eğlence amaçlı üretilir; tavsiye niteliği taşımaz.<br>
-      <a href="gizlilik.html" style="color:var(--muted)">Gizlilik</a> · <a href="kullanim.html" style="color:var(--muted)">Koşullar</a>
+      <a href="gizlilik.html" style="color:var(--muted)">Gizlilik</a> · <a href="kullanim.html" style="color:var(--muted)">Koşullar</a> · <a href="#" id="geriBtn" style="color:var(--muted)">Öneri / Şikayet</a>
     </p>
   </section>
 
@@ -239,6 +239,19 @@
   </div>
 </div>
 
+<!-- ÖNERİ / ŞİKAYET MODALI -->
+<div class="overlay" id="geriOverlay">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Öneri / Şikayet</h2>
+    <p class="lead">Aklındaki her şeyi yaz — ne beğendin, ne eksik, ne olsa istersin. Hepsini okuyorum.</p>
+    <textarea id="geriMetin" rows="4" placeholder="Mesajın..." style="width:100%; box-sizing:border-box; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:14px; padding:13px 15px; color:var(--cream); font-family:var(--ui); font-size:14.5px; line-height:1.6; resize:none; margin-bottom:11px; outline:none;"></textarea>
+    <input id="geriEmail" type="email" inputmode="email" placeholder="E-posta (cevap istersen — zorunlu değil)" style="width:100%; box-sizing:border-box; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:14px; padding:13px 15px; color:var(--cream); font-family:var(--ui); font-size:14px; outline:none; margin-bottom:14px;">
+    <button class="cta" id="geriGonder">Gönder</button>
+    <button class="kapat" id="geriKapat">Vazgeç</button>
+  </div>
+</div>
+
 <!-- JETON MODALI -->
 <div class="overlay" id="overlay">
   <div class="sheet">
@@ -259,7 +272,9 @@ const APP_KEY  = 'ESOCSq_Yxj1_ILj9gMMNxXXwf9R7ylW4';   // backend'deki APP_KEY i
 const BACKEND = API_BASE + '/api/fal';
 const SES_API = API_BASE + '/api/ses';
 const KAYIT_API = API_BASE + '/api/kayit';
+const GERI_API = API_BASE + '/api/geribildirim';
 const BASLIK  = { 'content-type':'application/json', 'x-app-key': APP_KEY };
+const SURUM = '1.0';
 
 // ---- mağaza / native yapılandırma ----
 const RC_KEY = 'appl_AWGAgMUiSCLYyFNdYxdxoFDBBYg';          // RevenueCat > API keys > Apple (appl_...)
@@ -510,6 +525,31 @@ $('appleGiris').onclick = async ()=>{
     })}).catch(()=>{});
     $('girisOverlay').classList.remove('on');
   }catch(e){ /* kullanıcı vazgeçti */ }
+};
+
+// ---- öneri / şikayet ----
+$('geriBtn').onclick = (e)=>{ e.preventDefault(); $('geriOverlay').classList.add('on'); };
+$('geriKapat').onclick = ()=> $('geriOverlay').classList.remove('on');
+$('geriOverlay').addEventListener('click', e=>{ if(e.target===$('geriOverlay')) $('geriOverlay').classList.remove('on'); });
+let geriGonderiliyor = false;
+$('geriGonder').onclick = async ()=>{
+  const mesaj = $('geriMetin').value.trim();
+  if(mesaj.length < 2){ bildir('Önce birkaç kelime yazıver canım'); return; }
+  if(geriGonderiliyor) return;
+  geriGonderiliyor = true;
+  const btn = $('geriGonder'); const eskiMetin = btn.textContent; btn.textContent = 'Gönderiliyor…';
+  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  try{
+    const res = await fetch(GERI_API, { method:'POST', headers: BASLIK, body: JSON.stringify({
+      mesaj, email: $('geriEmail').value.trim() || (k && k.email) || null,
+      apple_sub: k && k.sub || null, surum: SURUM,
+    })});
+    if(!res.ok) throw 0;
+    $('geriMetin').value = ''; $('geriEmail').value = '';
+    $('geriOverlay').classList.remove('on');
+    bildir('Teşekkürler, mesajın bana ulaştı');
+  }catch{ bildir('Gönderilemedi — birazdan tekrar dener misin?'); }
+  finally{ geriGonderiliyor = false; btn.textContent = eskiMetin; }
 };
 
 $('voice').innerHTML = VOICE_LABEL;
