@@ -59,4 +59,4 @@ IAP (Consumable):
 
 ## App Review notları (gönderimde "Notes" alanına)
 Fal içeriği yapay zekâ ile üretilir ve uygulama içinde/açıklamada "eğlence amaçlıdır" ibaresi açıkça yer alır.
-Test için: uygulama ilk falı ücretsiz verir; fincan fotoğrafı yerine "Fotoğrafsız dene (örnek)" butonu da vardır.
+Test için: uygulama ilk falı ücretsiz verir. Denemek için herhangi bir Türk kahvesi fincanının içini fotoğraflayın; uygulama fincandaki şekilleri okuyup dört başlıkta yorum üretir. (Fincan olmayan bir görsel gönderilirse uygulama nazikçe uyarır ve ücret almaz.)

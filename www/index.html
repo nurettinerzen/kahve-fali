@@ -179,7 +179,6 @@
       <span id="ctaLabel">Fincanımın fotoğrafını çek</span>
     </label>
     <input type="file" id="file" accept="image/*" capture="environment">
-    <button class="cta ghost-btn" id="demo">Fotoğrafsız dene (örnek)</button>
     <p style="text-align:center; font-size:11.5px; color:var(--muted); line-height:1.6; margin:14px 0 0;">
       Fallar yapay zekâ ile eğlence amaçlı üretilir; tavsiye niteliği taşımaz.<br>
       <a href="gizlilik.html" style="color:var(--muted)">Gizlilik</a> · <a href="kullanim.html" style="color:var(--muted)">Koşullar</a>
@@ -409,8 +408,8 @@ $('file').addEventListener('change', e=>{
   r.onload=()=>{ const url=r.result; startRead(url, String(url).split(',')[1], f.type||'image/jpeg'); };
   r.readAsDataURL(f);
 });
+// pazarlama çekimleri için örnek fincan (artık ekranda buton yok; sadece #demo kancası kullanır)
 const CUP_SVG='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"><rect width="150" height="150" fill="#2a1810"/><ellipse cx="75" cy="100" rx="46" ry="10" fill="#e9dcc6"/><path d="M48 60 H102 L97 96 A10 10 0 0 1 87 105 H63 A10 10 0 0 1 53 96 Z" fill="#f7efdf"/><ellipse cx="75" cy="60" rx="27" ry="7" fill="#fdf8ee" stroke="#dcbd7c" stroke-width="2"/><ellipse cx="75" cy="60" rx="21" ry="5" fill="#3a2416"/></svg>');
-$('demo').onclick=()=> startRead(CUP_SVG, null, null);
 
 function reset(){ show('s-start'); }
 $('again').onclick=reset; $('resetBtn').onclick=reset; $('uyariBtn').onclick=reset;
@@ -519,7 +518,7 @@ girisDurum();
 rcBaslat();
 
 // pazarlama çekimleri: #demo fal ekranını, #paywall jeton çekmecesini açar
-if(location.hash === '#demo'){ localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5'); durumYaz(); setTimeout(()=>$('demo').click(), 400); }
+if(location.hash === '#demo'){ localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5'); durumYaz(); setTimeout(()=>startRead(CUP_SVG, null, null), 400); }
 if(location.hash === '#paywall'){ setTimeout(paywall, 600); }
 </script>
 </body>
