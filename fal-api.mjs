@@ -179,6 +179,29 @@ async function kullaniciKaydet({ apple_sub, email, ad, pazarlama_izni }) {
   if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
 }
 
+// ---- geri bildirim (öneri / şikayet -> Supabase) ----
+async function geriBildirimKaydet({ mesaj, email, apple_sub, surum }) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Supabase yapılandırılmamış");
+  const temiz = String(mesaj || "").trim().slice(0, 2000);
+  if (temiz.length < 2) throw new Error("Boş geri bildirim");
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/geri_bildirim`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_KEY,
+      authorization: `Bearer ${SUPABASE_KEY}`,
+      "content-type": "application/json",
+      prefer: "return=minimal",
+    },
+    body: JSON.stringify([{
+      mesaj: temiz,
+      email: (email || "").trim().slice(0, 200) || null,
+      apple_sub: apple_sub || null,
+      surum: (surum || "").slice(0, 40) || null,
+    }]),
+  });
+  if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
+}
+
 // ---- server ----
 async function readBody(req) {
   let body = "", boyut = 0;
@@ -197,7 +220,7 @@ createServer(async (req, res) => {
 
   if (req.method === "GET" && req.url.startsWith("/health")) {
     res.writeHead(200, { "content-type": "application/json" });
-    return res.end(JSON.stringify({ ok: true, surum: 4, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
+    return res.end(JSON.stringify({ ok: true, surum: 5, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
   }
 
   // politika + destek sayfaları (App Store'un istediği herkese açık URL'ler)
@@ -236,6 +259,13 @@ createServer(async (req, res) => {
     if (req.url.startsWith("/api/kayit")) {
       const govde = await readBody(req);
       await kullaniciKaydet(govde);
+      res.writeHead(200, { "content-type": "application/json" });
+      return res.end(JSON.stringify({ ok: true }));
+    }
+
+    if (req.url.startsWith("/api/geribildirim")) {
+      const govde = await readBody(req);
+      await geriBildirimKaydet(govde);
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify({ ok: true }));
     }
