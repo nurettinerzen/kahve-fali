@@ -145,7 +145,7 @@
       <button class="ghost" id="resetBtn">Yeni fal</button>
     </div>
   </div>
-  <div class="brand">
+  <div class="brand" id="brand">
     <div class="moon">☾</div>
     <h1>Kahve Falı</h1>
     <div class="sub">HİKMET ABLA</div>
@@ -178,7 +178,7 @@
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5a2 2 0 0 1 2-2h1.7L9 4.5h6l1.3 2H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.1"/></svg>
       <span id="ctaLabel">Fincanımın fotoğrafını çek</span>
     </label>
-    <input type="file" id="file" accept="image/*" capture="environment">
+    <input type="file" id="file" accept="image/*">
     <p style="text-align:center; font-size:11.5px; color:var(--muted); line-height:1.6; margin:14px 0 0;">
       Fallar yapay zekâ ile eğlence amaçlı üretilir; tavsiye niteliği taşımaz.<br>
       <a href="gizlilik.html" style="color:var(--muted)">Gizlilik</a> · <a href="kullanim.html" style="color:var(--muted)">Koşullar</a> · <a href="#" id="geriBtn" style="color:var(--muted)">Öneri / Şikayet</a>
@@ -556,6 +556,21 @@ $('voice').innerHTML = VOICE_LABEL;
 durumYaz();
 girisDurum();
 rcBaslat();
+
+// backend'i açılışta uyandır (Render soğuk başlatma ~50sn olmasın; kullanıcı fotoğrafı çekerken ısınsın)
+fetch(API_BASE + '/health').catch(()=>{});
+
+// gizli inceleme (App Review) yolu: logoya 3 kez üst üste dokun -> yerel örnek fal (backend gerekmez).
+// Kullanıcı görmez; App Review notunda açıklanır. Fincanı olmayan inceleme cihazında çekirdek özelliği gösterir.
+(function(){
+  let n = 0, t = 0;
+  $('brand').addEventListener('click', ()=>{
+    const now = Date.now();
+    n = (now - t < 800) ? n + 1 : 1;
+    t = now;
+    if(n >= 3){ n = 0; startRead(CUP_SVG, null, null); }
+  });
+})();
 
 // pazarlama çekimleri: #demo fal ekranını, #paywall jeton çekmecesini açar
 if(location.hash === '#demo'){ localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5'); durumYaz(); setTimeout(()=>startRead(CUP_SVG, null, null), 400); }
