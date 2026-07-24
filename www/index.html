@@ -234,8 +234,20 @@
       <h2>Hesabım</h2>
       <p class="lead" id="girisEmail"></p>
       <button class="cta ghost-btn" id="cikis" style="margin-top:0">Çıkış yap</button>
+      <button id="hesapSil" style="width:100%; margin-top:12px; padding:13px; background:none; border:none; color:#cf8a8a; font-size:14px; font-weight:500; cursor:pointer; font-family:var(--ui);">Hesabımı kalıcı olarak sil</button>
     </div>
     <button class="kapat" id="girisKapat">Kapat</button>
+  </div>
+</div>
+
+<!-- HESAP SİLME ONAY MODALI -->
+<div class="overlay" id="silOverlay">
+  <div class="sheet">
+    <div class="grip"></div>
+    <h2>Hesabını sil</h2>
+    <p class="lead">Hesabın ve sana ait tüm veriler (e-posta, kayıt) sunucudan <b>kalıcı olarak</b> silinir. Bu işlem geri alınamaz.</p>
+    <button class="cta" id="silOnay" style="background:linear-gradient(180deg,#d98a8a,#b45c5c); box-shadow:0 12px 26px rgba(180,92,92,.3);">Evet, hesabımı sil</button>
+    <button class="kapat" id="silVazgec">Vazgeç</button>
   </div>
 </div>
 
@@ -273,6 +285,7 @@ const BACKEND = API_BASE + '/api/fal';
 const SES_API = API_BASE + '/api/ses';
 const KAYIT_API = API_BASE + '/api/kayit';
 const GERI_API = API_BASE + '/api/geribildirim';
+const HESAPSIL_API = API_BASE + '/api/hesap-sil';
 const BASLIK  = { 'content-type':'application/json', 'x-app-key': APP_KEY };
 const SURUM = '1.0';
 
@@ -503,6 +516,25 @@ function girisDurum(){
 $('girisBtn').onclick = ()=> $('girisOverlay').classList.add('on');
 $('girisKapat').onclick = ()=> $('girisOverlay').classList.remove('on');
 $('cikis').onclick = ()=>{ localStorage.removeItem('kullanici'); girisDurum(); };
+
+// ---- hesap silme (Apple 5.1.1(v)) ----
+$('hesapSil').onclick = ()=>{ $('girisOverlay').classList.remove('on'); $('silOverlay').classList.add('on'); };
+$('silVazgec').onclick = ()=> $('silOverlay').classList.remove('on');
+$('silOverlay').addEventListener('click', e=>{ if(e.target===$('silOverlay')) $('silOverlay').classList.remove('on'); });
+let siliniyor = false;
+$('silOnay').onclick = async ()=>{
+  if(siliniyor) return; siliniyor = true;
+  const btn = $('silOnay'); btn.textContent = 'Siliniyor…';
+  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  try{
+    if(k && k.sub) await fetch(HESAPSIL_API, { method:'POST', headers: BASLIK, body: JSON.stringify({ apple_sub: k.sub }) });
+  }catch{}
+  localStorage.removeItem('kullanici');
+  siliniyor = false; btn.textContent = 'Evet, hesabımı sil';
+  $('silOverlay').classList.remove('on');
+  girisDurum();
+  bildir('Hesabın ve verilerin silindi');
+};
 $('appleGiris').onclick = async ()=>{
   if(!NATIVE){ alert('Apple ile giriş yalnızca iPhone uygulamasında çalışır.'); return; }
   try{
