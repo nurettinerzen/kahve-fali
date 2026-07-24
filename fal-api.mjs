@@ -202,6 +202,18 @@ async function geriBildirimKaydet({ mesaj, email, apple_sub, surum }) {
   if (!res.ok) throw new Error(`Supabase ${res.status}: ${await res.text()}`);
 }
 
+// ---- hesap silme (Apple 5.1.1(v): hesap açan uygulama silme de sunmalı) ----
+async function hesapSil({ apple_sub }) {
+  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Supabase yapılandırılmamış");
+  if (!apple_sub) throw new Error("apple_sub zorunlu");
+  const bas = { apikey: SUPABASE_KEY, authorization: `Bearer ${SUPABASE_KEY}`, prefer: "return=minimal" };
+  const q = `apple_sub=eq.${encodeURIComponent(apple_sub)}`;
+  // kullanıcı kaydını ve ona bağlı geri bildirimleri kalıcı sil
+  const r1 = await fetch(`${SUPABASE_URL}/rest/v1/kullanicilar?${q}`, { method: "DELETE", headers: bas });
+  if (!r1.ok) throw new Error(`Supabase ${r1.status}: ${await r1.text()}`);
+  await fetch(`${SUPABASE_URL}/rest/v1/geri_bildirim?${q}`, { method: "DELETE", headers: bas }).catch(() => {});
+}
+
 // ---- server ----
 async function readBody(req) {
   let body = "", boyut = 0;
@@ -220,7 +232,7 @@ createServer(async (req, res) => {
 
   if (req.method === "GET" && req.url.startsWith("/health")) {
     res.writeHead(200, { "content-type": "application/json" });
-    return res.end(JSON.stringify({ ok: true, surum: 5, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
+    return res.end(JSON.stringify({ ok: true, surum: 6, ses: Boolean(ELEVEN_KEY && VOICE_ID) }));
   }
 
   // politika + destek sayfaları (App Store'un istediği herkese açık URL'ler)
@@ -266,6 +278,13 @@ createServer(async (req, res) => {
     if (req.url.startsWith("/api/geribildirim")) {
       const govde = await readBody(req);
       await geriBildirimKaydet(govde);
+      res.writeHead(200, { "content-type": "application/json" });
+      return res.end(JSON.stringify({ ok: true }));
+    }
+
+    if (req.url.startsWith("/api/hesap-sil")) {
+      const govde = await readBody(req);
+      await hesapSil(govde);
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify({ ok: true }));
     }
