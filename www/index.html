@@ -104,6 +104,18 @@
   .voice small{ font-weight:500; opacity:.78; }
   .again{ margin-top:12px; }
 
+  /* fal geçmişi */
+  .gecmisBaslik{ font-family:var(--ui); font-size:19px; font-weight:800; color:var(--gold2); margin:6px 0 4px; letter-spacing:-.2px; }
+  .gecmisNot{ color:var(--muted); font-size:12.5px; line-height:1.55; margin:0 0 14px; }
+  .gkart{ display:flex; align-items:center; gap:12px; background:rgba(255,255,255,.03); border:1px solid rgba(220,189,124,.13);
+    border-radius:14px; padding:13px 14px; margin-bottom:9px; }
+  .gkart .gmetin{ flex:1; min-width:0; cursor:pointer; }
+  .gkart .gtarih{ display:block; font-size:11px; color:var(--gold); letter-spacing:.6px; font-weight:700; text-transform:uppercase; margin-bottom:4px; }
+  .gkart .gozet{ display:block; font-size:13.5px; color:#e9dfce; line-height:1.5;
+    overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+  .gkart .gsil{ flex:none; background:none; border:none; color:#cf8a8a; font-size:19px; line-height:1; padding:6px 4px; cursor:pointer; font-family:var(--ui); }
+  .gbos{ color:var(--muted); font-size:14px; text-align:center; line-height:1.65; padding:28px 10px; }
+
   .uyari{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; text-align:center; }
   .uyari p{ font-family:var(--ui); font-size:15.5px; font-weight:500; color:#e2cda2; line-height:1.65; max-width:300px; margin:0; }
 
@@ -111,7 +123,9 @@
   .overlay.on{ display:flex; }
   @keyframes up{ from{ transform:translateY(100%) } to{ transform:none } }
   .sheet{ width:100%; max-width:440px; background:linear-gradient(180deg,#241a10,#1a1109); border:1px solid var(--line); border-bottom:none;
-    border-radius:26px 26px 0 0; padding:14px 22px calc(32px + env(safe-area-inset-bottom, 0px)); animation:up .32s cubic-bezier(.2,.8,.2,1) both; }
+    border-radius:26px 26px 0 0; padding:14px 22px calc(32px + env(safe-area-inset-bottom, 0px)); animation:up .32s cubic-bezier(.2,.8,.2,1) both;
+    /* küçük ekranda (iPhone SE) çekmece taşıp başlığı kesmesin */
+    max-height:92vh; overflow-y:auto; -webkit-overflow-scrolling:touch; }
   .grip{ width:40px; height:4px; border-radius:3px; background:var(--line); margin:0 auto 16px; }
   .sheet h2{ font-family:var(--ui); font-size:19px; margin:0 0 5px; color:var(--gold2); font-weight:800; text-align:center; letter-spacing:-.2px; }
   .sheet .lead{ color:var(--muted); font-size:13px; text-align:center; margin:0 0 20px; line-height:1.55; }
@@ -126,6 +140,9 @@
   .pak .badge{ font-size:9.5px; color:#20140a; background:linear-gradient(180deg,#eecd8a,#c69a4e); padding:2px 8px; border-radius:7px; font-weight:700; letter-spacing:.4px; }
   .pak .p{ font-family:var(--ui); font-size:16.5px; font-weight:800; color:var(--gold2); }
   .sheet .kapat{ width:100%; margin-top:10px; padding:13px; background:none; border:none; color:var(--muted); font-size:14px; cursor:pointer; font-family:var(--ui); font-weight:500; }
+  .fiyatBekle{ text-align:center; font-size:12px; color:var(--muted); margin:2px 0 0; }
+  /* fiyat gelene kadar paketler seçilemez: kullanıcı ne ödeyeceğini bilmeden dokunmasın */
+  .pak.fiyatsiz{ opacity:.55; pointer-events:none; }
 
   .toast{ position:fixed; bottom:calc(26px + env(safe-area-inset-bottom, 0px)); left:50%; transform:translate(-50%,240%);
     max-width:calc(100% - 40px); text-align:center;
@@ -140,7 +157,8 @@
 <div class="app">
   <div class="top">
     <div class="jeton" id="jetonBtn"><span class="coin"></span><span id="jetonSay">0</span> jeton</div>
-    <div style="display:flex; gap:16px; align-items:center">
+    <div style="display:flex; gap:14px; align-items:center">
+      <button class="ghost" id="gecmisBtn">Geçmiş</button>
       <button class="ghost" id="girisBtn">Giriş</button>
       <button class="ghost" id="resetBtn">Yeni fal</button>
     </div>
@@ -201,6 +219,19 @@
       <div class="voicebar">
         <button class="voice" id="voice"></button>
         <button class="cta ghost-btn again" id="again">Yeni fal</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAL GEÇMİŞİ — "Yeni fal"a basınca ödenmiş fal kaybolmasın (son 20 fal cihazda saklanır) -->
+  <section class="screen" id="s-gecmis">
+    <div class="reading">
+      <h2 class="gecmisBaslik">Fal geçmişin</h2>
+      <p class="gecmisNot">Son 20 falın yalnızca bu cihazda saklanır; sunucuya gönderilmez.</p>
+      <div id="gecmisListe"></div>
+      <div class="voicebar">
+        <button class="cta ghost-btn" id="gecmisTumSil" style="margin-top:0">Tüm geçmişi sil</button>
+        <button class="cta ghost-btn" id="gecmisKapat">Geri dön</button>
       </div>
     </div>
   </section>
@@ -270,9 +301,17 @@
     <div class="grip"></div>
     <h2>Jeton al</h2>
     <p class="lead">İlk falın Hikmet Abla'dan hediye. Sonrası her fal 1 jeton; sesinden dinlemek istersen +1 jeton.</p>
-    <div class="pak" data-jeton="1"><div class="l"><span class="n">Tek fal</span><span class="d">1 jeton</span></div><span class="p">₺29</span></div>
-    <div class="pak best" data-jeton="5"><div class="l"><span class="n">5 fal <span class="badge">POPÜLER</span></span><span class="d">5 jeton · tanesi ₺20</span></div><span class="p">₺99</span></div>
-    <div class="pak" data-jeton="20"><div class="l"><span class="n">20 fal</span><span class="d">20 jeton · tanesi ₺12</span></div><span class="p">₺249</span></div>
+    <!-- Fiyatlar App Store'dan (StoreKit) gelir. Gelene kadar BOŞ kalır —
+         koda gömülü ₺ fiyatı TR dışındaki kullanıcıya yanlış para birimi gösteriyordu. -->
+    <div class="pak" data-jeton="1"><div class="l"><span class="n">Tek fal</span><span class="d">1 jeton</span></div><span class="p"></span></div>
+    <div class="pak best" data-jeton="5"><div class="l"><span class="n">5 fal <span class="badge">POPÜLER</span></span><span class="d">5 jeton</span></div><span class="p"></span></div>
+    <div class="pak" data-jeton="20"><div class="l"><span class="n">20 fal</span><span class="d">20 jeton</span></div><span class="p"></span></div>
+    <p class="fiyatBekle" id="fiyatBekle">Fiyatlar App Store'dan alınıyor…</p>
+    <button class="kapat" id="geriYukle" style="color:var(--gold2); font-weight:600;">Satın alımları geri yükle</button>
+    <p style="text-align:center; font-size:11px; color:var(--muted); line-height:1.6; margin:6px 0 0;">
+      Tek seferlik alım — abonelik ve otomatik yenileme yoktur. Ödeme onayla birlikte Apple Kimliğinizden tahsil edilir.<br>
+      <a href="kullanim.html" style="color:var(--muted)">Kullanım Koşulları</a> · <a href="gizlilik.html" style="color:var(--muted)">Gizlilik Politikası</a>
+    </p>
     <button class="kapat" id="kapat">Şimdi değil</button>
   </div>
 </div>
@@ -286,8 +325,11 @@ const SES_API = API_BASE + '/api/ses';
 const KAYIT_API = API_BASE + '/api/kayit';
 const GERI_API = API_BASE + '/api/geribildirim';
 const HESAPSIL_API = API_BASE + '/api/hesap-sil';
+const OTURUM_API = API_BASE + '/api/oturum';
+const SATINALMA_API = API_BASE + '/api/satinalma';
 const BASLIK  = { 'content-type':'application/json', 'x-app-key': APP_KEY };
-const SURUM = '1.0';
+const SURUM = '1.1';
+const URETIM = true;                                    // false: #demo gibi geliştirme kısayolları açılır
 
 // ---- mağaza / native yapılandırma ----
 const RC_KEY = 'appl_AWGAgMUiSCLYyFNdYxdxoFDBBYg';          // RevenueCat > API keys > Apple (appl_...)
@@ -296,19 +338,99 @@ const NATIVE = !!(window.Capacitor && window.Capacitor.isNativePlatform && windo
 const Eklenti = () => (window.Capacitor && window.Capacitor.Plugins) || {};
 let rcUrunler = null;   // productId -> StoreProduct
 
+// RevenueCat hata kodları — @revenuecat/purchases-capacitor 11.3.2'nin
+// purchases-typescript-internal-esm/dist/errors.d.ts (PURCHASES_ERROR_CODE) dosyasından birebir.
+const RC_HATA = {
+  IPTAL: '1',            // PURCHASE_CANCELLED_ERROR — kullanıcı vazgeçti, sessiz geç
+  MAGAZA: '2',           // STORE_PROBLEM_ERROR
+  IZIN_YOK: '3',         // PURCHASE_NOT_ALLOWED_ERROR (ebeveyn kısıtı / cihaz kısıtı)
+  GECERSIZ: '4',         // PURCHASE_INVALID_ERROR
+  URUN_YOK: '5',         // PRODUCT_NOT_AVAILABLE_FOR_PURCHASE_ERROR
+  ZATEN_ALINDI: '6',     // PRODUCT_ALREADY_PURCHASED_ERROR
+  AG: '10',              // NETWORK_ERROR
+  ISLEM_SURUYOR: '15',   // OPERATION_ALREADY_IN_PROGRESS_ERROR
+  BEKLIYOR: '20',        // PAYMENT_PENDING_ERROR — "Ask to Buy" / banka onayı bekliyor
+  YAPILANDIRMA: '23',    // CONFIGURATION_ERROR
+  CEVRIMDISI: '35',      // OFFLINE_CONNECTION_ERROR
+};
+function rcKod(e){
+  // Capacitor köprüsü hata nesnesini {code, message} olarak geçirir; kod dizedir ("1", "20"...)
+  const k = e && (e.code ?? (e.userInfo && e.userInfo.code));
+  return k == null ? null : String(k);
+}
+function rcHataMesaji(e){
+  switch(rcKod(e)){
+    case RC_HATA.BEKLIYOR:      return { tur:'bilgi', m:'Ödemen onay bekliyor. Onaylanınca jetonların otomatik yüklenecek.' };
+    case RC_HATA.AG:
+    case RC_HATA.CEVRIMDISI:    return { tur:'hata', m:'İnternete bağlanamadım — bağlantını kontrol edip tekrar dener misin?' };
+    case RC_HATA.IZIN_YOK:      return { tur:'hata', m:'Bu cihazda satın alma kapalı (Ekran Süresi kısıtlaması olabilir).' };
+    case RC_HATA.URUN_YOK:      return { tur:'hata', m:'Bu paket şu an mağazada görünmüyor — biraz sonra tekrar dene.' };
+    case RC_HATA.ZATEN_ALINDI:  return { tur:'bilgi', m:'Bu alım zaten yapılmış — "Satın alımları geri yükle"ye dokun.' };
+    case RC_HATA.ISLEM_SURUYOR: return { tur:'bilgi', m:'Önceki işlem hâlâ sürüyor, bir saniye…' };
+    case RC_HATA.MAGAZA:
+    case RC_HATA.GECERSIZ:      return { tur:'hata', m:'App Store işlemi tamamlayamadı — biraz sonra tekrar dene.' };
+    case RC_HATA.YAPILANDIRMA:  return { tur:'hata', m:'Mağaza ayarlarında bir sorun var — kısa süre içinde düzelteceğiz.' };
+    default:                    return { tur:'hata', m:'Satın alma tamamlanamadı — tekrar dener misin?' };
+  }
+}
+
+function fiyatlariGoster(){
+  const hepsiVar = Object.keys(URUNLER).every(k=>{
+    const kutu = document.querySelector(`.pak[data-jeton="${k}"] .p`);
+    return kutu && kutu.textContent.trim();
+  });
+  document.querySelectorAll('.pak').forEach(p=>{
+    const kutu = p.querySelector('.p');
+    p.classList.toggle('fiyatsiz', !(kutu && kutu.textContent.trim()));
+  });
+  const not = $('fiyatBekle');
+  if(!not) return;
+  if(hepsiVar) not.style.display = 'none';
+  else { not.style.display = ''; not.textContent = rcUrunler === null && rcDenendi ? 'Fiyatlar alınamadı — bağlantını kontrol edip çekmeceyi tekrar aç.' : 'Fiyatlar App Store\'dan alınıyor…'; }
+}
+let rcDenendi = false;
 async function rcBaslat(){
-  if(!NATIVE || !RC_KEY.startsWith('appl_')) return;   // web'de ya da anahtar girilmeden: demo satın alma
+  if(!NATIVE || !RC_KEY.startsWith('appl_')){ rcDenendi = true; fiyatlariGoster(); return; }  // web önizleme
   try{
     const { Purchases } = Eklenti();
-    await Purchases.configure({ apiKey: RC_KEY });
+    // appUserID = cihaz kimliği: sunucu satın almayı RevenueCat REST API'de bu kimlikle doğruluyor
+    await Purchases.configure({ apiKey: RC_KEY, appUserID: cihazKimligi() });
     const { products } = await Purchases.getProducts({ productIdentifiers: Object.values(URUNLER) });
     rcUrunler = {};
     for(const u of products){
       rcUrunler[u.identifier] = u;
-      const kutu = document.querySelector(`.pak[data-jeton="${Object.keys(URUNLER).find(k=>URUNLER[k]===u.identifier)}"] .p`);
+      const adet = Object.keys(URUNLER).find(k=>URUNLER[k]===u.identifier);
+      const kutu = document.querySelector(`.pak[data-jeton="${adet}"] .p`);
       if(kutu && u.priceString) kutu.textContent = u.priceString;   // gerçek mağaza fiyatı
+      // "tanesi X" bilgisi de mağaza para biriminden hesaplansın (uydurma ₺ yok)
+      const alt = document.querySelector(`.pak[data-jeton="${adet}"] .d`);
+      if(alt && adet > 1 && typeof u.price === 'number' && u.currencyCode){
+        try{
+          const birim = new Intl.NumberFormat(navigator.language || 'tr-TR', { style:'currency', currency:u.currencyCode }).format(u.price/Number(adet));
+          alt.textContent = `${adet} jeton · tanesi ${birim}`;
+        }catch{}
+      }
     }
   }catch(e){ console.warn('RevenueCat başlatılamadı', e); rcUrunler = null; }
+  finally{ rcDenendi = true; fiyatlariGoster(); }
+}
+
+// Satın alma sonrası jetonu SUNUCUDAN al: sunucu RevenueCat REST API ile doğrular,
+// mükerrer yüklemeyi işlem kimliğiyle engeller. İstemcinin "+= adet" demesi otorite değil.
+async function satinAlmayiSenkronla(){
+  if(!oturum) await oturumAc();
+  if(!oturum) return null;
+  try{
+    let res = await fetch(SATINALMA_API, { method:'POST', headers: BASLIK, body: JSON.stringify({ oturum, rc_uid: cihazKimligi() }) });
+    if(res.status === 401 || res.status === 403){        // oturum düşmüş / cihaz eşleşmemiş: tazele, bir kez daha dene
+      await oturumAc();
+      res = await fetch(SATINALMA_API, { method:'POST', headers: BASLIK, body: JSON.stringify({ oturum, rc_uid: cihazKimligi() }) });
+    }
+    if(!res.ok) return null;
+    const d = await res.json();
+    bakiyeUygula(d);
+    return d;
+  }catch(e){ console.warn('satın alma senkronu', e); return null; }
 }
 
 const IC_SOUND = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L13 19V5L7.5 9.5z"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7"/></svg>';
@@ -328,11 +450,66 @@ const MOCK = {
 
 const BEDAVA_HAK = 1;                                   // hediye fal sayısı
 let current = MOCK;
-let jeton = parseInt(localStorage.getItem('jeton') ?? '0', 10);
-let bedavaSayi = parseInt(localStorage.getItem('bedavaSayi') ?? (localStorage.getItem('bedavaFal') === '1' ? '1' : '0'), 10);
+const sayiOku = (v, varsayilan) => { const n = parseInt(v, 10); return Number.isFinite(n) && n >= 0 ? n : varsayilan; };
+let jeton = sayiOku(localStorage.getItem('jeton'), 0);          // bozuk kayıt NaN'a düşerse jeton kalıcı kilitlenir
+let bedavaSayi = sayiOku(localStorage.getItem('bedavaSayi') ?? (localStorage.getItem('bedavaFal') === '1' ? '1' : '0'), 0);
 let sesUrl = null;
 
+// ============================================================================
+// KİMLİK + SUNUCU JETON DEFTERİ
+// Jeton bakiyesi artık sunucuda tutuluyor. Buradaki sayaç yalnızca GÖSTERİM;
+// otorite sunucudur. Uygulama silinip kurulunca satın alınan jetonlar kaybolmaz
+// (Apple ile giriş yapılmışsa kesin, aksi hâlde "geri yükle" ile).
+// ============================================================================
+let oturum = localStorage.getItem('oturum') || null;
+let sunucuOtorite = false;                              // sunucu defteri çalışıyor mu
+
+function cihazKimligi(){
+  let c = localStorage.getItem('cihaz') || '';
+  if(!/^[A-Za-z0-9._:-]{8,64}$/.test(c)){
+    try{ c = crypto.randomUUID(); }
+    catch{ c = 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2); }
+    c = c.replace(/[^A-Za-z0-9._:-]/g,'').slice(0,64);
+    localStorage.setItem('cihaz', c);
+  }
+  return c;
+}
+function bakiyeUygula(b){
+  if(!b || typeof b.jeton !== 'number') return false;
+  jeton = b.jeton;
+  bedavaSayi = Math.max(0, Math.min(BEDAVA_HAK, b.bedava_kullanilan || 0));
+  sunucuOtorite = true;
+  durumYaz();
+  return true;
+}
+// Oturum aç / tazele. apple_token verilirse hesap Apple kimliğine bağlanır.
+async function oturumAc(apple_token){
+  try{
+    const govde = { cihaz: cihazKimligi() };
+    if(apple_token) govde.apple_token = apple_token;
+    if(oturum) govde.oturum = oturum;
+    // Eski sürümden yükseltme: yereldeki bakiyeyi BİR KEZ sunucuya devret ki
+    // ödenmiş jetonlar sunucuya geçişte buharlaşmasın.
+    if(!localStorage.getItem('devredildi')){ govde.devir_jeton = jeton; govde.devir_bedava = bedavaSayi; }
+    const res = await fetch(OTURUM_API, { method:'POST', headers: BASLIK, body: JSON.stringify(govde) });
+    if(!res.ok) return null;
+    const d = await res.json();
+    if(d && d.oturum){
+      oturum = d.oturum;
+      localStorage.setItem('oturum', oturum);
+      localStorage.setItem('devredildi','1');
+      bakiyeUygula(d);
+      return d;
+    }
+  }catch(e){ console.warn('oturum açılamadı', e); }
+  return null;                                          // sunucu eski/erişilemez: yerel sayaçla devam
+}
+
 const $=id=>document.getElementById(id);
+// Model/sunucu metni HTML olarak basıldığı için kaçırılmalı (aksi hâlde script çalıştırılabilir)
+function kacir(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Bozuk localStorage kaydı açılışı kilitlemesin (rcBaslat çalışmazsa satın alma da çalışmaz)
+function kullaniciOku(){ try{ return JSON.parse(localStorage.getItem('kullanici') || 'null'); }catch{ localStorage.removeItem('kullanici'); return null; } }
 let toastT;
 function bildir(m){ const t=$('toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'), 2600); }
 function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on')); $(id).classList.add('on'); }
@@ -373,6 +550,11 @@ function kartlariCanlandir(){
   }, 700);
 }
 function paywall(){ $('overlay').classList.add('on'); }
+// çalan sesi durdur (ekran değişince arkada konuşmaya devam etmesin)
+function sesDurdur(){
+  try{ if(sesCalar){ sesCalar.pause(); sesCalar.currentTime = 0; } }catch{}
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+}
 
 function renderReading(r){
   current = r;
@@ -381,26 +563,38 @@ function renderReading(r){
     show('s-uyari');
     return false;
   }
+  sesDurdur();                                            // önceki falın sesi yeni falın üstüne çalmasın
   sesUrl = null;
   const btn=$('voice'); btn.classList.remove('playing'); btn.innerHTML = VOICE_LABEL;
   $('seen').textContent = r.gorulenler;
-  $('secs').innerHTML = r.bolumler.map(b=>`<div class="sec"><h3>${bolumIkon(b.baslik)}<span>${b.baslik}</span></h3><p>${b.metin}</p></div>`).join('')
-    + `<div class="sec kapanisKart"><p class="kapanis">${r.kapanis}</p></div>`;
+  $('secs').innerHTML = r.bolumler.map(b=>`<div class="sec"><h3>${bolumIkon(b.baslik)}<span>${kacir(b.baslik)}</span></h3><p>${kacir(b.metin)}</p></div>`).join('')
+    + `<div class="sec kapanisKart"><p class="kapanis">${kacir(r.kapanis)}</p></div>`;
   show('s-read');
   kartlariCanlandir();
   return true;
 }
 
+// { fal } ya da { hata:'bakiye'|'oturum'|'ag' } döner
 async function fetchFal(base64, mimeType){
   try{
     const ac = new AbortController();
     const zaman = setTimeout(()=>ac.abort(), 90000);      // soğuk başlatma payıyla üst sınır
-    const res = await fetch(BACKEND, {method:'POST', headers: BASLIK, body: JSON.stringify({image:base64, mimeType}), signal: ac.signal});
+    const govde = { image:base64, mimeType };
+    if(oturum) govde.oturum = oturum;                     // sunucu bakiyeyi KENDİ düşer
+    const res = await fetch(BACKEND, {method:'POST', headers: BASLIK, body: JSON.stringify(govde), signal: ac.signal});
     clearTimeout(zaman);
-    if(!res.ok) return null;
+    if(res.status === 402) return { hata:'bakiye' };       // sunucu: jeton kalmadı
+    if(res.status === 401){ oturum = null; localStorage.removeItem('oturum'); return { hata:'oturum' }; }
+    if(!res.ok) return { hata:'ag' };
     const d = await res.json();
-    return d && (d.fincan_mi === false || Array.isArray(d.bolumler)) ? d : null;
-  }catch{ return null; }
+    if(!d) return { hata:'ag' };
+    if(d.bakiye) bakiyeUygula(d.bakiye);                   // otorite sunucu
+    if(d.fincan_mi === false) return { fal:d };
+    // Boş/eksik bölüm gelirse jeton yakıp boş fal göstermektense hata say
+    const gecerli = Array.isArray(d.bolumler) && d.bolumler.length > 0
+      && d.bolumler.every(b => b && typeof b.baslik === 'string' && typeof b.metin === 'string' && b.metin.trim());
+    return gecerli ? { fal:d } : { hata:'ag' };
+  }catch{ return { hata:'ag' }; }
 }
 
 let falBakiliyor = false;                                 // aynı anda ikinci fal başlamasın
@@ -414,64 +608,226 @@ async function startRead(imgSrc, base64, mimeType){
     let reading;
     if(ornekMi){ await new Promise(r=>setTimeout(r, 2200)); reading = MOCK; }
     else {
-      reading = await fetchFal(base64, mimeType);
-      if(!reading){                                       // sunucuya ulaşılamadı: ücret yok, sahte fal yok
+      let sonuc = await fetchFal(base64, mimeType);
+      // Oturum düşmüşse (sunucu yeniden kurulmuş, hesap silinmiş) bir kez tazeleyip tekrar dene
+      if(sonuc.hata === 'oturum'){ await oturumAc(); sonuc = await fetchFal(base64, mimeType); }
+      // Sunucu "jetonun yok" dedi: ekrandaki sayaç yalan söylüyor demektir, gerçek bakiyeyi çek
+      if(sonuc.hata === 'bakiye'){ await oturumAc(); show('s-start'); paywall(); return; }
+      if(sonuc.hata){                                     // sunucuya ulaşılamadı: ücret yok, sahte fal yok
         show('s-start');
         bildir('Bağlanamadım canım — bir dakika sonra tekrar dene');
         return;
       }
+      reading = sonuc.fal;
     }
     const gecerli = renderReading(reading);
     if(gecerli && !ornekMi){
-      if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
-      else jeton -= 1;
-      durumYaz();
+      gecmiseEkle(reading);
+      // Sunucu otoriteyse bakiyeyi zaten fetchFal uyguladı; yalnızca eski sunucuda yerel düş.
+      if(!sunucuOtorite){
+        if(bedavaSayi < BEDAVA_HAK) bedavaSayi += 1;
+        else jeton -= 1;
+        durumYaz();
+      }
     }
+  } catch(e){
+    // Beklenmedik hata: kullanıcı sonsuza dek "bakıyor..." ekranında kalmasın (ücret de alınmaz)
+    console.error('fal hatası', e);
+    show('s-start');
+    bildir('Bir aksilik oldu canım — tekrar dener misin?');
   } finally { falBakiliyor = false; }
 }
 
-$('file').addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=()=>{ const url=r.result; startRead(url, String(url).split(',')[1], f.type||'image/jpeg'); };
-  r.readAsDataURL(f);
+// ---- fotoğraf küçültme + EXIF yönü ----
+// Neden: 12MP telefon fotoğrafı base64'te ~10MB olup 8MB sunucu sınırını aşıyor, vision
+// maliyetini katlıyor ve yan çekilmiş fotoğraf modelde ters görünüp fal kalitesini bozuyor.
+const FOTO_MAKS_KENAR = 1600;
+function ciz(kaynak, g, y){
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(g)); c.height = Math.max(1, Math.round(y));
+  c.getContext('2d').drawImage(kaynak, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.85);
+}
+async function fotoKucult(dataUrl){
+  // createImageBitmap: EXIF yönünü uygular (imageOrientation:'from-image'), yan fotoğrafı düzeltir
+  try{
+    if(typeof createImageBitmap === 'function' && typeof fetch === 'function'){
+      const blob = await (await fetch(dataUrl)).blob();
+      const bmp = await createImageBitmap(blob, { imageOrientation:'from-image' });
+      const buyuk = Math.max(bmp.width, bmp.height);
+      if(buyuk){
+        const o = buyuk > FOTO_MAKS_KENAR ? FOTO_MAKS_KENAR/buyuk : 1;
+        const yeni = ciz(bmp, bmp.width*o, bmp.height*o);
+        try{ bmp.close(); }catch{}
+        if(yeni && yeni.length > 2000 && yeni.startsWith('data:image/jpeg')) return yeni;
+      }
+    }
+  }catch(e){ console.warn('createImageBitmap küçültme başarısız', e); }
+  // Yedek yol: <img>. Modern WebKit'te <img> zaten EXIF yönünü uygular.
+  return new Promise((coz)=>{
+    try{
+      const im = new Image();
+      im.onload = ()=>{
+        try{
+          const buyuk = Math.max(im.naturalWidth||0, im.naturalHeight||0);
+          if(!buyuk){ coz(dataUrl); return; }
+          const o = buyuk > FOTO_MAKS_KENAR ? FOTO_MAKS_KENAR/buyuk : 1;
+          const yeni = ciz(im, im.naturalWidth*o, im.naturalHeight*o);
+          coz((yeni && yeni.length > 2000 && yeni.startsWith('data:image/jpeg')) ? yeni : dataUrl);
+        }catch(e){ coz(dataUrl); }                       // her hata durumunda orijinale düş
+      };
+      im.onerror = ()=> coz(dataUrl);
+      im.src = dataUrl;
+    }catch(e){ coz(dataUrl); }
+  });
+}
+
+$('file').addEventListener('change', async e=>{
+  const f=e.target.files[0];
+  e.target.value = '';                                    // aynı fotoğraf ikinci kez seçilebilsin
+  if(!f) return;
+  const url = await new Promise(coz=>{ const r=new FileReader(); r.onload=()=>coz(String(r.result)); r.onerror=()=>coz(''); r.readAsDataURL(f); });
+  if(!url.startsWith('data:')){ bildir('Fotoğraf okunamadı — tekrar dener misin?'); return; }
+  const kucuk = await fotoKucult(url);
+  const virgul = kucuk.indexOf(',');
+  const mimeEs = kucuk.slice(0, virgul).match(/data:([^;,]+)/);
+  startRead(kucuk, kucuk.slice(virgul+1), (mimeEs && mimeEs[1]) || 'image/jpeg');
 });
 // pazarlama çekimleri için örnek fincan (artık ekranda buton yok; sadece #demo kancası kullanır)
 const CUP_SVG='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"><rect width="150" height="150" fill="#2a1810"/><ellipse cx="75" cy="100" rx="46" ry="10" fill="#e9dcc6"/><path d="M48 60 H102 L97 96 A10 10 0 0 1 87 105 H63 A10 10 0 0 1 53 96 Z" fill="#f7efdf"/><ellipse cx="75" cy="60" rx="27" ry="7" fill="#fdf8ee" stroke="#dcbd7c" stroke-width="2"/><ellipse cx="75" cy="60" rx="21" ry="5" fill="#3a2416"/></svg>');
 
-function reset(){ show('s-start'); }
+function reset(){ sesDurdur(); show('s-start'); }
 $('again').onclick=reset; $('resetBtn').onclick=reset; $('uyariBtn').onclick=reset;
 
+// ============================================================================
+// FAL GEÇMİŞİ — "Yeni fal"a basınca ödenmiş fal kalıcı kaybolmasın.
+// Yalnızca cihazda (localStorage), en fazla 20 kayıt. Fotoğraf saklanmaz.
+// ============================================================================
+const GECMIS_TAVAN = 20;
+function gecmisOku(){
+  try{
+    const l = JSON.parse(localStorage.getItem('falGecmisi') || '[]');
+    return Array.isArray(l) ? l.filter(k=>k && Array.isArray(k.bolumler)) : [];
+  }catch{ localStorage.removeItem('falGecmisi'); return []; }
+}
+function gecmisYaz(l){
+  try{ localStorage.setItem('falGecmisi', JSON.stringify(l.slice(0, GECMIS_TAVAN))); }
+  catch(e){                                              // kota dolduysa yarısını at, tekrar dene
+    try{ localStorage.setItem('falGecmisi', JSON.stringify(l.slice(0, 10))); }catch{}
+  }
+}
+function gecmiseEkle(r){
+  if(!r || r.fincan_mi === false || !Array.isArray(r.bolumler) || !r.bolumler.length) return;
+  const l = gecmisOku();
+  l.unshift({ id: Date.now() + '-' + Math.random().toString(36).slice(2,7), tarih: Date.now(),
+    gorulenler: r.gorulenler || '', bolumler: r.bolumler, kapanis: r.kapanis || '' });
+  gecmisYaz(l);
+}
+const TARIH_BICIM = (ts)=>{
+  try{ return new Date(ts).toLocaleDateString('tr-TR', { day:'numeric', month:'long', hour:'2-digit', minute:'2-digit' }); }
+  catch{ return ''; }
+};
+function gecmisCiz(){
+  const kap = $('gecmisListe'); if(!kap) return;
+  const l = gecmisOku();
+  if(!l.length){ kap.innerHTML = '<p class="gbos">Henüz kayıtlı falın yok canım.<br>Baktırdığın fallar burada birikir.</p>'; $('gecmisTumSil').style.display='none'; return; }
+  $('gecmisTumSil').style.display='';
+  kap.innerHTML = l.map(k=>`<div class="gkart" data-id="${kacir(k.id)}">
+      <div class="gmetin"><span class="gtarih">${kacir(TARIH_BICIM(k.tarih))}</span><span class="gozet">${kacir(k.gorulenler || (k.bolumler[0]&&k.bolumler[0].metin) || '')}</span></div>
+      <button class="gsil" aria-label="Bu falı sil">&times;</button>
+    </div>`).join('');
+  kap.querySelectorAll('.gkart').forEach(kart=>{
+    const id = kart.dataset.id;
+    kart.querySelector('.gmetin').onclick = ()=>{
+      const k = gecmisOku().find(x=>x.id === id);
+      if(k) renderReading({ fincan_mi:true, uyari:'', gorulenler:k.gorulenler, bolumler:k.bolumler, kapanis:k.kapanis });
+    };
+    kart.querySelector('.gsil').onclick = ()=>{ gecmisYaz(gecmisOku().filter(x=>x.id !== id)); gecmisCiz(); bildir('Fal silindi'); };
+  });
+}
+$('gecmisBtn').onclick = ()=>{ sesDurdur(); gecmisCiz(); show('s-gecmis'); };
+$('gecmisKapat').onclick = reset;
+$('gecmisTumSil').onclick = ()=>{ localStorage.removeItem('falGecmisi'); gecmisCiz(); bildir('Geçmişin silindi'); };
+
 let sesYukleniyor = false;                                // çift dokunma = çift jeton olmasın
+let sesCalar = null;                                      // TEK oynatıcı: butona iki kez basınca üst üste iki ses çalmasın
+function tarayiciSesi(metin){
+  const synth=window.speechSynthesis;
+  if(!synth) return false;
+  synth.cancel(); const u=new SpeechSynthesisUtterance(metin); u.lang='tr-TR'; u.rate=.94;
+  const tr=synth.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('tr')); if(tr) u.voice=tr;
+  synth.speak(u); return true;
+}
+function sesiCal(url, metin){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  if(!sesCalar) sesCalar = new Audio();
+  sesCalar.pause();
+  if(sesCalar.src !== url) sesCalar.src = url;
+  try{ sesCalar.currentTime = 0; }catch{}
+  const p = sesCalar.play();
+  // iOS otomatik oynatma kısıtı / kodek hatası: jetonu ödemiş kullanıcı sessiz kalmasın
+  if(p && p.catch) p.catch(()=>{ if(!tarayiciSesi(metin)) bildir('Ses çalınamadı — falını ekrandan okuyabilirsin'); });
+}
 async function sesiOynat(){
   const btn=$('voice');
-  if(sesUrl){ new Audio(sesUrl).play(); return; }
+  const metin = current.gorulenler + ' ' + (current.bolumler||[]).map(b=>b.metin).join(' ') + ' ' + current.kapanis;
+  if(sesUrl){ sesiCal(sesUrl, metin); return; }
   if(sesYukleniyor) return;
   if(jeton < 1){ paywall(); return; }
   sesYukleniyor = true;
   btn.innerHTML = "Hikmet Abla sesleniyor<span class='dots'><span>.</span><span>.</span><span>.</span></span>";
-  const metin = current.gorulenler + ' ' + current.bolumler.map(b=>b.metin).join(' ') + ' ' + current.kapanis;
   try{
     const ac = new AbortController();
     const zaman = setTimeout(()=>ac.abort(), 90000);
-    const res = await fetch(SES_API, {method:'POST', headers: BASLIK, body: JSON.stringify({text:metin}), signal: ac.signal});
+    const govde = { text:metin };
+    if(oturum) govde.oturum = oturum;                     // sunucu jetonu KENDİ düşer
+    const res = await fetch(SES_API, {method:'POST', headers: BASLIK, body: JSON.stringify(govde), signal: ac.signal});
     clearTimeout(zaman);
+    if(res.status === 402){ await oturumAc(); btn.innerHTML = VOICE_LABEL; paywall(); return; }
+    if(res.status === 401){ oturum = null; localStorage.removeItem('oturum'); await oturumAc(); throw 0; }
     if(!res.ok) throw 0;
+    const bakiyeBaslik = res.headers.get('x-bakiye');
     sesUrl = URL.createObjectURL(await res.blob());
-    jeton -= 1; durumYaz();
+    // Otorite sunucu: bakiyeyi yanıttan al. Eski sunucuda (başlık yok) yerel düş.
+    let uygulandi = false;
+    if(bakiyeBaslik){ try{ uygulandi = bakiyeUygula(JSON.parse(bakiyeBaslik)); }catch{} }
+    if(!uygulandi){ jeton -= 1; durumYaz(); }
     btn.classList.add('playing'); btn.innerHTML = IC_SOUND + " Dinleniyor…";
-    new Audio(sesUrl).play();
+    sesiCal(sesUrl, metin);
   }catch{
-    const synth=window.speechSynthesis;
-    if(synth){ synth.cancel(); const u=new SpeechSynthesisUtterance(metin); u.lang='tr-TR'; u.rate=.94;
-      const tr=synth.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('tr')); if(tr) u.voice=tr; synth.speak(u); }
+    tarayiciSesi(metin);                                  // ses üretilemedi: jeton düşülmez, tarayıcı sesine düşer
     btn.classList.add('playing'); btn.innerHTML = IC_SOUND + " Dinleniyor…";
   }
   finally{ sesYukleniyor = false; }
 }
 $('voice').onclick = sesiOynat;
 
-$('jetonBtn').onclick = paywall;
+// ---- satın alımları geri yükle ----
+// Tüketilebilir üründe Apple zorunlu tutmaz; jetonlar sunucuya taşındıktan sonra anlamlı:
+// Apple hesabındaki alımları RevenueCat'e yeniden bağlar, sunucu bakiyeyi yeniden hesaplar.
+let geriYukleniyor = false;
+$('geriYukle').onclick = async ()=>{
+  if(geriYukleniyor) return;
+  geriYukleniyor = true;
+  const btn = $('geriYukle'); const eski = btn.textContent; btn.textContent = 'Geri yükleniyor…';
+  try{
+    if(NATIVE && RC_KEY.startsWith('appl_')){
+      const { Purchases } = Eklenti();
+      if(!rcUrunler) await rcBaslat();
+      await Purchases.restorePurchases();                 // Apple makbuzunu bu kullanıcıya bağlar
+    }
+    const d = await satinAlmayiSenkronla();
+    if(!d) bildir('Geri yüklenemedi — bağlantını kontrol edip tekrar dene');
+    else if(d.eklenen > 0) bildir(d.eklenen + ' jeton geri yüklendi');
+    else bildir('Geri yüklenecek yeni alım bulunamadı (bakiyen: ' + d.jeton + ' jeton)');
+  }catch(e){
+    if(rcKod(e) === RC_HATA.IPTAL || (e && e.userCancelled)){ /* vazgeçti */ }
+    else { console.warn('geri yükleme hatası', rcKod(e), e && e.message); bildir(rcHataMesaji(e).m); }
+  }
+  finally{ geriYukleniyor = false; btn.textContent = eski; }
+};
+
+$('jetonBtn').onclick = ()=>{ paywall(); if(!rcUrunler) rcBaslat(); };   // fiyat gelmemişse çekmece açılırken yeniden dene
 $('kapat').onclick = ()=> $('overlay').classList.remove('on');
 // çekmece dışına (karartılmış alana) dokununca da kapansın
 $('overlay').addEventListener('click', e=>{ if(e.target===$('overlay')) $('overlay').classList.remove('on'); });
@@ -492,22 +848,33 @@ document.querySelectorAll('.pak').forEach(p=>{
         const urun = rcUrunler && rcUrunler[URUNLER[String(adet)]];
         if(!urun){ bildir('Mağazaya bağlanılamadı — biraz sonra tekrar dene'); return; }
         const { Purchases } = Eklenti();
-        await Purchases.purchaseStoreProduct({ product: urun });
-        jeton += adet; durumYaz();                        // ödeme Apple'dan onaylandı
+        const sonuc = await Purchases.purchaseStoreProduct({ product: urun });
+        // Ödeme Apple'dan onaylandı. Jetonu sunucu yükler (RevenueCat REST doğrulaması + mükerrer engeli).
+        const senk = await satinAlmayiSenkronla();
+        if(!senk && !sunucuOtorite){ jeton += adet; durumYaz(); }   // eski/erişilemez sunucu: eski davranış
         $('overlay').classList.remove('on');
-        bildir(adet + ' jeton hesabına eklendi');
-      }catch(e){ /* kullanıcı vazgeçti ya da ödeme reddedildi — sessiz geç */ }
+        if(senk && senk.eklenen === 0 && sonuc && sonuc.transaction){
+          // Sunucu bu işlemi zaten yüklemişti (ör. yeniden deneme) — kullanıcıya yanlış bilgi verme
+          bildir('Jetonların hesabında');
+        } else bildir(adet + ' jeton hesabına eklendi');
+      }catch(e){
+        if(rcKod(e) === RC_HATA.IPTAL || (e && e.userCancelled)) return;   // kullanıcı vazgeçti: sessiz
+        console.warn('satın alma hatası', rcKod(e), e && e.message);
+        const { tur, m } = rcHataMesaji(e);
+        bildir(m);
+        // "Ask to Buy" gibi bekleyen ödemeler sonradan düşebilir: bir kez senkron dene
+        if(tur === 'bilgi') satinAlmayiSenkronla();
+      }
       finally{ satinAliniyor = false; p.classList.remove('bekliyor'); }
     } else {
-      jeton += adet; durumYaz();                          // yalnızca web önizleme/demo
-      $('overlay').classList.remove('on');
+      bildir('Satın alma yalnızca iPhone uygulamasında çalışır');   // web önizlemede bedava jeton YOK
     }
   };
 });
 
 // ---- Apple ile giriş ----
 function girisDurum(){
-  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  const k = kullaniciOku();
   $('girisBtn').textContent = k ? 'Hesabım' : 'Giriş';
   $('girisYok').style.display = k ? 'none' : '';
   $('girisVar').style.display = k ? '' : 'none';
@@ -525,12 +892,37 @@ let siliniyor = false;
 $('silOnay').onclick = async ()=>{
   if(siliniyor) return; siliniyor = true;
   const btn = $('silOnay'); btn.textContent = 'Siliniyor…';
-  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  const k = kullaniciOku();
+  // Sahiplik kanıtı ZORUNLU (eskiden çıplak apple_sub gönderiliyordu = IDOR).
+  // Önce taze Apple kimlik jetonu al; olmazsa oturum jetonuyla sil.
+  let apple_token = null;
   try{
-    if(k && k.sub) await fetch(HESAPSIL_API, { method:'POST', headers: BASLIK, body: JSON.stringify({ apple_sub: k.sub }) });
+    if(NATIVE){
+      const { SignInWithApple } = Eklenti();
+      const { response } = await SignInWithApple.authorize({ scopes: '' });
+      apple_token = response && response.identityToken;
+    }
+  }catch(e){ /* kullanıcı yeniden doğrulamayı iptal etti — oturum jetonuna düşeceğiz */ }
+
+  let silindi = false;
+  try{
+    const govde = apple_token ? { apple_token } : (oturum ? { oturum } : null);
+    if(govde){
+      const res = await fetch(HESAPSIL_API, { method:'POST', headers: BASLIK, body: JSON.stringify(govde) });
+      silindi = res.ok;
+    }
   }catch{}
-  localStorage.removeItem('kullanici');
+
   siliniyor = false; btn.textContent = 'Evet, hesabımı sil';
+  if(!silindi && k && k.sub){
+    // Sunucuda silinemediyse kullanıcıya "silindi" DEME (eskiden öyle diyordu).
+    bildir('Hesabın silinemedi — bağlantını kontrol edip tekrar dene');
+    return;
+  }
+  // Yerel izleri temizle: hesap sunucuda yok, oturum/cihaz kimliği de geçersiz
+  ['kullanici','oturum','jeton','bedavaSayi','girisHediye','devredildi','falGecmisi'].forEach(a=>localStorage.removeItem(a));
+  oturum = null; jeton = 0; bedavaSayi = 0; sunucuOtorite = false;
+  durumYaz(); gecmisCiz();
   $('silOverlay').classList.remove('on');
   girisDurum();
   bildir('Hesabın ve verilerin silindi');
@@ -547,13 +939,21 @@ $('appleGiris').onclick = async ()=>{
     };
     localStorage.setItem('kullanici', JSON.stringify(kullanici));
     girisDurum();
-    if(!localStorage.getItem('girisHediye')){
-      jeton += 1; localStorage.setItem('girisHediye','1'); durumYaz();
-      bildir('Hediyen hesabında: 1 fal jetonu');
+    // Kimlik jetonunu sunucuya ver: hesap Apple kimliğine bağlanır, cihazdaki bakiye taşınır,
+    // giriş hediyesi SUNUCUDA bir kez verilir (silip kurmak yeniden kazandırmaz).
+    const d = await oturumAc(response.identityToken);
+    const oncekiJeton = jeton;
+    if(!d){                                              // sunucuya ulaşılamadı: eski yerel davranış
+      if(!localStorage.getItem('girisHediye')){ jeton += 1; localStorage.setItem('girisHediye','1'); durumYaz(); bildir('Hediyen hesabında: 1 fal jetonu'); }
+    } else if(!localStorage.getItem('girisHediye')){
+      localStorage.setItem('girisHediye','1');
+      bildir('Hoş geldin — jetonların hesabında: ' + oncekiJeton);
     }
+    // Kimlik jetonu Supabase kaydında da doğrulansın (eski sunucu bu alanı yok sayar)
     fetch(KAYIT_API, { method:'POST', headers: BASLIK, body: JSON.stringify({
       apple_sub: kullanici.sub, email: kullanici.email, ad: kullanici.ad,
       pazarlama_izni: $('pazarlamaIzni').checked,
+      apple_token: response.identityToken,
     })}).catch(()=>{});
     $('girisOverlay').classList.remove('on');
   }catch(e){ /* kullanıcı vazgeçti */ }
@@ -570,7 +970,7 @@ $('geriGonder').onclick = async ()=>{
   if(geriGonderiliyor) return;
   geriGonderiliyor = true;
   const btn = $('geriGonder'); const eskiMetin = btn.textContent; btn.textContent = 'Gönderiliyor…';
-  const k = JSON.parse(localStorage.getItem('kullanici') || 'null');
+  const k = kullaniciOku();
   try{
     const res = await fetch(GERI_API, { method:'POST', headers: BASLIK, body: JSON.stringify({
       mesaj, email: $('geriEmail').value.trim() || (k && k.email) || null,
@@ -587,10 +987,12 @@ $('geriGonder').onclick = async ()=>{
 $('voice').innerHTML = VOICE_LABEL;
 durumYaz();
 girisDurum();
+fiyatlariGoster();                                      // fiyat gelene kadar paketler kilitli
 rcBaslat();
 
-// backend'i açılışta uyandır (Render soğuk başlatma ~50sn olmasın; kullanıcı fotoğrafı çekerken ısınsın)
-fetch(API_BASE + '/health').catch(()=>{});
+// Açılışta oturumu aç: sunucudaki bakiyeyi çeker (otorite) ve Render'ı ısıtır.
+// Sunucu eskiyse/erişilemezse null döner ve uygulama yerel sayaçla eskisi gibi çalışır.
+oturumAc().catch(()=>{});
 
 // gizli inceleme (App Review) yolu: logoya 3 kez üst üste dokun -> yerel örnek fal (backend gerekmez).
 // Kullanıcı görmez; App Review notunda açıklanır. Fincanı olmayan inceleme cihazında çekirdek özelliği gösterir.
@@ -604,8 +1006,13 @@ fetch(API_BASE + '/health').catch(()=>{});
   });
 })();
 
-// pazarlama çekimleri: #demo fal ekranını, #paywall jeton çekmecesini açar
-if(location.hash === '#demo'){ localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5'); durumYaz(); setTimeout(()=>startRead(CUP_SVG, null, null), 400); }
+// pazarlama çekimleri: #demo fal ekranını, #paywall jeton çekmecesini açar.
+// #demo BEDAVA JETON verdiği için üretimde KAPALI (URETIM=false yapılınca açılır).
+if(!URETIM && location.hash === '#demo'){
+  localStorage.setItem('bedavaSayi','0'); localStorage.setItem('jeton','5');
+  jeton = 5; bedavaSayi = 0; durumYaz();
+  setTimeout(()=>startRead(CUP_SVG, null, null), 400);
+}
 if(location.hash === '#paywall'){ setTimeout(paywall, 600); }
 </script>
 </body>

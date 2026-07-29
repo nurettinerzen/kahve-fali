@@ -12,3 +12,13 @@ services:
         sync: false
       - key: APP_KEY
         sync: false
+      # jeton defteri — bu ikisi yoksa sunucu eski (istemci sayaçlı) davranışa düşer
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      # RevenueCat SECRET anahtarı (sk_...) — satın alma doğrulaması için
+      - key: RC_SECRET
+        sync: false
+      - key: APPLE_CLIENT_ID
+        value: com.nurettinerzen.kahvefali
